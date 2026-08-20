@@ -3,10 +3,6 @@ spring:
     name: sun-booking-tours
   profiles:
     include: secret
-  datasource:
-    url: jdbc:postgresql://localhost:5432/sun_booking_tours
-    username: postgres
-    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
