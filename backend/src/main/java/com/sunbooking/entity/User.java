@@ -4,12 +4,8 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
+@AttributeOverride(name = "id", column = @Column(name = "user_id"))
 public class User extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
@@ -34,13 +30,6 @@ public class User extends BaseEntity {
 
     @Column(name = "status")
     private String status;
-    
-    public Long getUserId() {
-        return userId;
-    }
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
     public String getUsername() {
         return username;

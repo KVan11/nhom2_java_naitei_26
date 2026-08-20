@@ -15,8 +15,10 @@ public class RegisterRequest {
     private String password;
 
     @NotBlank(message = "Full name cannot be empty")
+    @Size(min = 3, max = 50, message = "Full name must be between 3 and 50 characters")
     private String fullName;
 
+    @NotBlank(message = "Email cannot be empty")
     @Email(message = "Email must be a valid email address")
     private String email;
 

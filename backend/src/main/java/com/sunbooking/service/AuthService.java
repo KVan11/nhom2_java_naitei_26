@@ -48,7 +48,7 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         return new UserResponse(
-                savedUser.getUserId(),
+                savedUser.getId(),
                 savedUser.getUsername(),
                 savedUser.getFullName(),
                 savedUser.getEmail(),
@@ -68,7 +68,7 @@ public class AuthService {
         User user = userDetails.getUser();
 
         responseBuilder.setUserResponse(new UserResponse(
-                user.getUserId(),
+                user.getId(),
                 user.getUsername(),
                 user.getFullName(),
                 user.getEmail(),
