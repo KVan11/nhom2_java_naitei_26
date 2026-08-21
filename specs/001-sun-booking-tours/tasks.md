@@ -24,10 +24,10 @@
 - [x] T014 [US1] [BE-AUTH] Implement registration and login in `backend/src/main/java/com/sunbooking/service/AuthService.java`
 - [x] T015 [US1] [BE-AUTH] Implement social login in `backend/src/main/java/com/sunbooking/service/SocialAuthService.java`
 - [x] T016 [US1] [BE-AUTH] Implement auth APIs in `backend/src/main/java/com/sunbooking/controller/AuthController.java`
-- [ ] T017 [P] [US1] [FE-AUTH] Setup AuthContext for frontend state in `frontend/src/context/AuthContext.tsx`
-- [ ] T018 [US1] [FE-AUTH] Implement auth API client in `frontend/src/services/authService.ts`
-- [ ] T019 [P] [US1] [FE-AUTH] Create Login page in `frontend/src/pages/auth/LoginPage.tsx`
-- [ ] T020 [P] [US1] [FE-AUTH] Create Register page in `frontend/src/pages/auth/RegisterPage.tsx`
+- [x] T017 [P] [US1] [FE-AUTH] Setup AuthContext for frontend state in `frontend/src/context/AuthContext.tsx`
+- [x] T018 [US1] [FE-AUTH] Implement auth API client in `frontend/src/services/authService.ts`
+- [x] T019 [P] [US1] [FE-AUTH] Create Login page in `frontend/src/pages/auth/LoginPage.tsx`
+- [x] T020 [P] [US1] [FE-AUTH] Create Register page in `frontend/src/pages/auth/RegisterPage.tsx`
 
 ## Phase 4: User Profile (US1)
 
