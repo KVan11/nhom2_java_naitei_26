@@ -12,13 +12,14 @@ CREATE TABLE users (
     username VARCHAR,
     password VARCHAR,
     full_name VARCHAR,
-    email VARCHAR,
+    email VARCHAR NOT NULL,
     phone VARCHAR,
     avatar VARCHAR,
     role VARCHAR,
     status VARCHAR,
     created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+    CONSTRAINT uq_users_email UNIQUE (email)
 );
 
 

@@ -20,9 +20,9 @@
 - [ ] T010 [P] [US1] [BE-AUTH] Create `SocialAccount` entity in `backend/src/main/java/com/sunbooking/entity/SocialAccount.java`
 - [x] T011 [P] [US1] [BE-AUTH] Create auth request/response DTOs in `backend/src/main/java/com/sunbooking/dto/auth/`
 - [x] T012 [US1] [BE-AUTH] Create `UserRepository` in `backend/src/main/java/com/sunbooking/repository/UserRepository.java`
-- [ ] T013 [US1] [BE-AUTH] Create `SocialAccountRepository` in `backend/src/main/java/com/sunbooking/repository/SocialAccountRepository.java`
+- [x] T013 [US1] [BE-AUTH] Create `SocialAccountRepository` in `backend/src/main/java/com/sunbooking/repository/SocialAccountRepository.java`
 - [x] T014 [US1] [BE-AUTH] Implement registration and login in `backend/src/main/java/com/sunbooking/service/AuthService.java`
-- [ ] T015 [US1] [BE-AUTH] Implement social login in `backend/src/main/java/com/sunbooking/service/SocialAuthService.java`
+- [x] T015 [US1] [BE-AUTH] Implement social login in `backend/src/main/java/com/sunbooking/service/SocialAuthService.java`
 - [x] T016 [US1] [BE-AUTH] Implement auth APIs in `backend/src/main/java/com/sunbooking/controller/AuthController.java`
 - [ ] T017 [P] [US1] [FE-AUTH] Setup AuthContext for frontend state in `frontend/src/context/AuthContext.tsx`
 - [ ] T018 [US1] [FE-AUTH] Implement auth API client in `frontend/src/services/authService.ts`

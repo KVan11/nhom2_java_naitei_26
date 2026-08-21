@@ -19,3 +19,5 @@ server:
 app:
   jwt:
     expiration-ms: 86400000
+  oauth2:
+    authorized-redirect-uris: http://localhost:5173/oauth2/redirect
