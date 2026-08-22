@@ -13,6 +13,8 @@ import NewsListPage from "@/features/news/pages/NewsListPage";
 import BookingHistoryPage from "@/features/booking/pages/BookingHistoryPage";
 import ProfilePage from "@/features/user/pages/ProfilePage";
 import { RouteMiddleware } from "@/app/middleware/RouteMiddleware";
+import VietQrCheckoutPage from "@/features/payment/pages/VietQrCheckoutPage";
+
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +48,14 @@ export const router = createBrowserRouter([
       {
         path: "news",
         element: <NewsListPage />,
+      },
+      {
+        path: "checkout/:bookingId", // Payment route with bookingId parameter
+        element: (
+            <RouteMiddleware type="auth">
+              <VietQrCheckoutPage />
+            </RouteMiddleware>
+        ),
       },
       {
         path: "bookings",
