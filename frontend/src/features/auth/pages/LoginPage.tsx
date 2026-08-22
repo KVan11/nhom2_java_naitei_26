@@ -17,7 +17,7 @@ export default function LoginPage() {
       }
       subtitle="Từ Vịnh Hạ Long kỳ vĩ đến ruộng bậc thang Sapa — mọi chuyến phiêu lưu đều bắt đầu bằng một cú click."
     >
-      <h1 className="font-serif text-3xl text-foreground mb-1.5">
+      <h1 className="text-3xl text-foreground mb-1.5">
         Chào mừng trở lại
       </h1>
       <p className="text-muted text-sm mb-8">Đăng nhập để tiếp tục</p>

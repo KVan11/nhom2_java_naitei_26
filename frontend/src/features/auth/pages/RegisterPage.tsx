@@ -14,7 +14,7 @@ export default function RegisterPage() {
       }
       subtitle="Tạo tài khoản để khám phá hàng trăm tour du lịch đẳng cấp khắp Việt Nam."
     >
-      <h1 className="font-serif text-3xl text-foreground mb-1.5">Tạo tài khoản</h1>
+      <h1 className="text-3xl text-foreground mb-1.5">Tạo tài khoản</h1>
       <p className="text-muted text-sm mb-7">Gia nhập cùng hàng ngàn tín đồ đam mê du lịch</p>
 
       <RegisterForm />

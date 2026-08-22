@@ -21,7 +21,7 @@ export default function AuthLayout({ children, imageSrc, title, subtitle }: Auth
         />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 to-slate-900/75" />
         <div className="absolute bottom-12 left-12 right-12">
-          <div className="font-serif text-3xl md:text-4xl text-white leading-tight mb-3">
+          <div className="text-3xl md:text-4xl text-white leading-tight mb-3">
             {title}
           </div>
           <p className="text-white/60 text-sm md:text-base">
@@ -38,7 +38,7 @@ export default function AuthLayout({ children, imageSrc, title, subtitle }: Auth
             <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-brand to-brand-dark rounded-xl shadow-sm">
               <SunIcon className="w-7 h-7 text-white" />
             </div>
-            <span className="font-serif text-3xl text-foreground tracking-tight leading-none">
+            <span className="text-3xl text-foreground tracking-tight leading-none">
               SUN <span className="text-brand">Booking</span> Tours
             </span>
           </Link>

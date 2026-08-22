@@ -1,11 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
-import PublicLayout from "@/app/layouts/PublicLayout";
-import HomePage from "@/pages/HomePage";
+import MainLayout from "@/app/layouts/MainLayout";
+import Home from "@/features/home/pages/Home";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
-import TourListPage from "@/features/tour/pages/TourListPage";
-import PlaceListPage from "@/features/place/pages/PlaceListPage";
+import TourList from "@/features/tour/pages/TourList";
+import TourDetail from "@/features/tour/pages/TourDetail";
+import PlaceList from "@/features/place/pages/PlaceList";
+import PlaceDetail from "@/features/place/pages/PlaceDetail";
 import FoodListPage from "@/features/food/pages/FoodListPage";
 import NewsListPage from "@/features/news/pages/NewsListPage";
 import BookingHistoryPage from "@/features/booking/pages/BookingHistoryPage";
@@ -15,19 +17,27 @@ import { RouteMiddleware } from "@/app/middleware/RouteMiddleware";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <PublicLayout />,
+    element: <MainLayout />,
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <Home />,
       },
       {
         path: "tours",
-        element: <TourListPage />,
+        element: <TourList />,
+      },
+      {
+        path: "tours/:id",
+        element: <TourDetail />,
       },
       {
         path: "places",
-        element: <PlaceListPage />,
+        element: <PlaceList />,
+      },
+      {
+        path: "places/:id",
+        element: <PlaceDetail />,
       },
       {
         path: "food",
