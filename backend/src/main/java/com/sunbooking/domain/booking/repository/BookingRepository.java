@@ -32,4 +32,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
            "LEFT JOIN FETCH b.travelers " +
            "WHERE b.id = :id")
     Optional<Booking> findByIdWithDetails(@Param("id") Long id);
+
+    @Query("SELECT b.status, COUNT(b) FROM Booking b GROUP BY b.status")
+    List<Object[]> countBookingsByStatus();
 }

@@ -1,5 +1,5 @@
-import * as React from "react"
-import { NavLink, Outlet, useLocation, Link } from "react-router-dom"
+import * as React from "react";
+import { NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import {
   BellIcon,
   CompassIcon,
@@ -12,13 +12,13 @@ import {
   TicketIcon,
   UsersIcon,
   XIcon,
-} from "lucide-react"
-import { AdminTeamSwitcher } from "./components/AdminTeamSwitcher"
-import { AdminSearch } from "./components/AdminSearch"
-import { AdminUserNav } from "./components/AdminUserNav"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import { AdminTeamSwitcher } from "./components/AdminTeamSwitcher";
+import { AdminSearch } from "./components/AdminSearch";
+import { AdminUserNav } from "./components/AdminUserNav";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const adminNavItems = [
   {
@@ -36,7 +36,6 @@ const adminNavItems = [
     to: "/admin/bookings",
     label: "Booking Requests",
     icon: TicketIcon,
-    badge: "47",
   },
   {
     to: "/admin/users",
@@ -59,16 +58,16 @@ const adminNavItems = [
     label: "Categories",
     icon: LayersIcon,
   },
-]
+];
 
 export default function AdminLayout() {
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
-  const location = useLocation()
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const location = useLocation();
 
   // Close mobile menu on route change
   React.useEffect(() => {
-    setMobileMenuOpen(false)
-  }, [location.pathname])
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-slate-50/60 flex flex-col">
@@ -79,9 +78,13 @@ export default function AdminLayout() {
             <AdminTeamSwitcher />
             <div className="hidden lg:block h-5 w-px bg-border" />
             <div className="hidden lg:flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">SUN Booking Tours</span>
+              <span className="font-semibold text-foreground">
+                SUN Booking Tours
+              </span>
               <span>/</span>
-              <span className="font-medium text-foreground">Management Console</span>
+              <span className="font-medium text-foreground">
+                Management Console
+              </span>
             </div>
           </div>
 
@@ -119,7 +122,11 @@ export default function AdminLayout() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}
+              {mobileMenuOpen ? (
+                <XIcon className="size-5" />
+              ) : (
+                <MenuIcon className="size-5" />
+              )}
             </Button>
           </div>
         </div>
@@ -128,7 +135,7 @@ export default function AdminLayout() {
         <div className="hidden md:block border-t border-border/40 bg-background/50">
           <div className="container-wrapper flex h-11 items-center gap-1 overflow-x-auto no-scrollbar">
             {adminNavItems.map((item) => {
-              const Icon = item.icon
+              const Icon = item.icon;
               return (
                 <NavLink
                   key={item.to}
@@ -139,7 +146,7 @@ export default function AdminLayout() {
                       "group relative flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-all",
                       isActive
                         ? "bg-muted text-foreground font-semibold shadow-2xs"
-                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                     )
                   }
                 >
@@ -148,7 +155,9 @@ export default function AdminLayout() {
                       <Icon
                         className={cn(
                           "size-3.5 transition-colors",
-                          isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                          isActive
+                            ? "text-primary"
+                            : "text-muted-foreground group-hover:text-foreground",
                         )}
                       />
                       <span>{item.label}</span>
@@ -159,7 +168,7 @@ export default function AdminLayout() {
                             "ml-0.5 h-4 px-1.5 text-[10px] font-semibold",
                             isActive
                               ? "bg-primary text-primary-foreground"
-                              : "bg-slate-200 text-slate-700"
+                              : "bg-slate-200 text-slate-700",
                           )}
                         >
                           {item.badge}
@@ -168,7 +177,7 @@ export default function AdminLayout() {
                     </>
                   )}
                 </NavLink>
-              )
+              );
             })}
           </div>
         </div>
@@ -177,7 +186,7 @@ export default function AdminLayout() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-background p-4 shadow-lg space-y-1">
             {adminNavItems.map((item) => {
-              const Icon = item.icon
+              const Icon = item.icon;
               return (
                 <NavLink
                   key={item.to}
@@ -188,7 +197,7 @@ export default function AdminLayout() {
                       "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                       isActive
                         ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )
                   }
                 >
@@ -202,7 +211,7 @@ export default function AdminLayout() {
                     </Badge>
                   )}
                 </NavLink>
-              )
+              );
             })}
             <div className="pt-2 border-t border-border">
               <Link
@@ -229,14 +238,20 @@ export default function AdminLayout() {
         <div className="container-wrapper flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>© 2026 SUN Booking Tours. Admin Operations Platform.</p>
           <div className="flex items-center gap-4 text-[11px]">
-            <Link to="/admin/revenue" className="hover:underline">System Status: Operational</Link>
+            <Link to="/admin/revenue" className="hover:underline">
+              System Status: Operational
+            </Link>
             <span>•</span>
-            <Link to="/admin/tours" className="hover:underline">Documentation</Link>
+            <Link to="/admin/tours" className="hover:underline">
+              Documentation
+            </Link>
             <span>•</span>
-            <Link to="/admin/users" className="hover:underline">Security Logs</Link>
+            <Link to="/admin/users" className="hover:underline">
+              Security Logs
+            </Link>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
