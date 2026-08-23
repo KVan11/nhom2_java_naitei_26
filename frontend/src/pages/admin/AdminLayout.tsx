@@ -29,7 +29,7 @@ const adminNavItems = [
   },
   {
     to: "/admin/tours",
-    label: "Tours & Places",
+    label: "Tours",
     icon: CompassIcon,
   },
   {
