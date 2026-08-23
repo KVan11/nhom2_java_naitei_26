@@ -8,6 +8,7 @@ import com.sunbooking.domain.tour.entity.TourImage;
 import com.sunbooking.domain.tour.entity.Tour;
 import com.sunbooking.domain.tour.entity.TourStatus;
 import com.sunbooking.global.exception.ResourceNotFoundException;
+import com.sunbooking.domain.booking.entity.Booking;
 import com.sunbooking.domain.booking.repository.BookingRepository;
 import com.sunbooking.domain.tour.repository.CategoryRepository;
 import com.sunbooking.domain.tour.repository.TourRepository;

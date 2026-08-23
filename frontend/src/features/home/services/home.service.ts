@@ -1,4 +1,6 @@
-import { MOCK_TOURS, MOCK_PLACES, MOCK_CATEGORIES, DEPARTURES_LIST, Tour, Place, Category } from "@/constants/mockData";
+import { tourService } from "@/features/tour/services/tour.service";
+import { getCategories } from "@/services/categoryService";
+import { MOCK_PLACES, DEPARTURES_LIST, Tour, Place, Category } from "@/constants/mockData";
 
 export interface HomeData {
   featuredTours: Tour[];
@@ -9,11 +11,33 @@ export interface HomeData {
 
 export const homeService = {
   getHomeData: async (): Promise<HomeData> => {
-    return {
-      featuredTours: MOCK_TOURS.slice(0, 6),
-      popularPlaces: MOCK_PLACES.slice(0, 4),
-      categories: MOCK_CATEGORIES,
-      departuresList: DEPARTURES_LIST
-    };
+    try {
+      const [tours, categories] = await Promise.all([
+        tourService.getTours(),
+        getCategories(),
+      ]);
+
+      const departuresList = Array.from(new Set([
+        ...tours.map(t => t.departure).filter(Boolean),
+        ...DEPARTURES_LIST
+      ]));
+
+      return {
+        featuredTours: tours.slice(0, 6),
+        popularPlaces: MOCK_PLACES.slice(0, 4),
+        categories,
+        departuresList
+      };
+    } catch (error) {
+      console.warn("Failed to load home data from API, using defaults:", error);
+      const tours = await tourService.getTours();
+      const categories = await getCategories();
+      return {
+        featuredTours: tours.slice(0, 6),
+        popularPlaces: MOCK_PLACES.slice(0, 4),
+        categories,
+        departuresList: DEPARTURES_LIST
+      };
+    }
   }
 };

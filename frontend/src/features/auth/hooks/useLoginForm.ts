@@ -23,7 +23,8 @@ export function useLoginForm() {
     try {
       const user = await login({ username, password });
       
-      if (user.role === "ADMIN" || username.includes("admin")) {
+      const role = String(user.role || "").toUpperCase();
+      if (role.includes("ADMIN") || username.includes("admin")) {
         navigate("/admin");
       } else {
         navigate("/");

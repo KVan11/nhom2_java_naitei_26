@@ -40,10 +40,14 @@ const PER_PAGE = 6;
 export default function TourList() {
   const [searchParams] = useSearchParams();
   const initialKw = searchParams.get("q") ?? "";
+  const initialCategory = searchParams.get("category") ?? "";
+  const initialDeparture = searchParams.get("departure") ?? "";
 
   const [filters, setFilters] = useState<Filters>({
     ...DEFAULT,
     keyword: initialKw,
+    categories: initialCategory ? [initialCategory] : [],
+    departures: initialDeparture ? [initialDeparture] : [],
   });
   const [sort, setSort] = useState("Đề xuất");
   const [page, setPage] = useState(1);

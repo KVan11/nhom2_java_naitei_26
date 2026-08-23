@@ -2,15 +2,15 @@ import { createBrowserRouter } from "react-router-dom";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
 import MainLayout from "@/app/layouts/MainLayout";
+import AdminLayout from "@/app/layouts/AdminLayout";
 import Home from "@/features/home/pages/Home";
-import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
-import AdminLayout from "@/pages/admin/AdminLayout";
+import AdminDashboardPage from "@/pages/admin/dashboard/AdminDashboardPage";
+import AdminCategoriesPage from "@/pages/admin/category/AdminCategoriesPage";
+import AdminToursPage from "@/pages/admin/tour/AdminToursPage";
 import AdminManageUsersPage from "@/pages/admin/users/AdminManageUsersPage";
-import AdminManageToursPage from "@/pages/admin/tours/AdminManageToursPage";
 import AdminManageBookingRequestsPage from "@/pages/admin/bookings/AdminManageBookingRequestsPage";
 import AdminManageReviewsPage from "@/pages/admin/reviews/AdminManageReviewsPage";
 import AdminRevenuePage from "@/pages/admin/revenue/AdminRevenuePage";
-import AdminManageCategoriesPage from "@/pages/admin/categories/AdminManageCategoriesPage";
 import TourList from "@/features/tour/pages/TourList";
 import TourDetail from "@/features/tour/pages/TourDetail";
 import PlaceList from "@/features/place/pages/PlaceList";
@@ -22,7 +22,6 @@ import ProfilePage from "@/features/user/pages/ProfilePage";
 import { RouteMiddleware } from "@/app/middleware/RouteMiddleware";
 import VietQrCheckoutPage from "@/features/payment/pages/VietQrCheckoutPage";
 import PaymentResultPage from "@/features/payment/pages/PaymentResultPage";
-
 
 export const router = createBrowserRouter([
   {
@@ -58,11 +57,11 @@ export const router = createBrowserRouter([
         element: <NewsListPage />,
       },
       {
-        path: "checkout/:bookingId", // Payment route with bookingId parameter
+        path: "checkout/:bookingId",
         element: (
-            <RouteMiddleware type="auth">
-              <VietQrCheckoutPage />
-            </RouteMiddleware>
+          <RouteMiddleware type="auth">
+            <VietQrCheckoutPage />
+          </RouteMiddleware>
         ),
       },
       {
@@ -96,12 +95,16 @@ export const router = createBrowserRouter([
         element: <AdminDashboardPage />,
       },
       {
-        path: "users",
-        element: <AdminManageUsersPage />,
+        path: "categories",
+        element: <AdminCategoriesPage />,
       },
       {
         path: "tours",
-        element: <AdminManageToursPage />,
+        element: <AdminToursPage />,
+      },
+      {
+        path: "users",
+        element: <AdminManageUsersPage />,
       },
       {
         path: "bookings",
@@ -114,10 +117,6 @@ export const router = createBrowserRouter([
       {
         path: "revenue",
         element: <AdminRevenuePage />,
-      },
-      {
-        path: "categories",
-        element: <AdminManageCategoriesPage />,
       },
     ],
   },
@@ -140,9 +139,9 @@ export const router = createBrowserRouter([
   {
     path: "payment/result",
     element: (
-        <RouteMiddleware type="auth">
-          <PaymentResultPage />
-        </RouteMiddleware>
+      <RouteMiddleware type="auth">
+        <PaymentResultPage />
+      </RouteMiddleware>
     ),
   },
 ]);

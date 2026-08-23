@@ -12,14 +12,14 @@ import java.util.List;
 
 public interface TourRepository extends JpaRepository<Tour, Long> {
 
-    @EntityGraph(attributePaths = {"category", "images", "departures"})
+    @EntityGraph(attributePaths = {"category"})
     @Query("select distinct t from Tour t "
         + "where (lower(t.name) like lower(concat('%', :keyword, '%')) "
         + "or lower(t.destination) like lower(concat('%', :keyword, '%'))) "
         + "and (:categoryId is null or t.category.id = :categoryId)")
     List<Tour> search(@Param("keyword") String keyword, @Param("categoryId") Long categoryId);
 
-    @EntityGraph(attributePaths = {"category", "images", "departures"})
+    @EntityGraph(attributePaths = {"category"})
     @Query("select t from Tour t "
         + "where (lower(t.name) like lower(concat('%', :keyword, '%')) "
         + "or lower(t.destination) like lower(concat('%', :keyword, '%'))) "
