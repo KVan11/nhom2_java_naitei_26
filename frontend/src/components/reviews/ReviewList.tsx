@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getReviews, type Review } from '../../services/reviewService'
+import CommentThread from './CommentThread'
 
 type ReviewListProps = {
   tourId?: number
@@ -75,6 +76,8 @@ export default function ReviewList({ tourId, refreshKey }: ReviewListProps) {
           )}
 
           <small>{new Date(review.createdAt).toLocaleString()}</small>
+
+          <CommentThread reviewId={review.id} />
         </article>
       ))}
     </section>
