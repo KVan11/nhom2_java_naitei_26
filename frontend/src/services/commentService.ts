@@ -51,3 +51,27 @@ export async function createComment(
     throw new Error(getErrorMessage(error, 'Unable to submit comment'))
   }
 }
+
+export type LikeStatus = {
+  reviewId: number
+  liked: boolean
+  likeCount: number
+}
+
+export async function getReviewLikeStatus(reviewId: number): Promise<LikeStatus> {
+  try {
+    const response = await apiClient.get<LikeStatus>(`/api/reviews/${reviewId}/like`)
+    return response.data
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to load review likes'))
+  }
+}
+
+export async function toggleReviewLike(reviewId: number): Promise<LikeStatus> {
+  try {
+    const response = await apiClient.post<LikeStatus>(`/api/reviews/${reviewId}/like`)
+    return response.data
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Unable to update review like'))
+  }
+}

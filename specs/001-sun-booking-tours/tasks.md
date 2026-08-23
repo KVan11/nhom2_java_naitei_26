@@ -123,18 +123,18 @@
 ## Phase 10: Comments / Replies / Likes (US4)
 
 - [X] T094 [P] [US4] [BE-COMMENT] Create `Comment` entity in `backend/src/main/java/com/sunbooking/entity/Comment.java`
-- [ ] T095 [P] [US4] [BE-COMMENT] Create `ReviewLike` entity in `backend/src/main/java/com/sunbooking/entity/ReviewLike.java`
-- [ ] T096 [P] [US4] [BE-COMMENT] Create comment/like DTOs in `backend/src/main/java/com/sunbooking/dto/review/`
+- [X] T095 [P] [US4] [BE-COMMENT] Create `ReviewLike` entity in `backend/src/main/java/com/sunbooking/domain/review/entity/ReviewLike.java`
+- [X] T096 [P] [US4] [BE-COMMENT] Create comment/like DTOs in `backend/src/main/java/com/sunbooking/domain/review/dto/`
 - [X] T097 [US4] [BE-COMMENT] Create `CommentRepository` in `backend/src/main/java/com/sunbooking/repository/CommentRepository.java`
-- [ ] T098 [US4] [BE-COMMENT] Create `ReviewLikeRepository` in `backend/src/main/java/com/sunbooking/repository/ReviewLikeRepository.java`
+- [X] T098 [US4] [BE-COMMENT] Create `ReviewLikeRepository` in `backend/src/main/java/com/sunbooking/domain/review/repository/ReviewLikeRepository.java`
 - [X] T099 [US4] [BE-COMMENT] Implement comment and reply logic in `backend/src/main/java/com/sunbooking/service/CommentService.java`
-- [ ] T100 [US4] [BE-COMMENT] Implement like toggle logic in `backend/src/main/java/com/sunbooking/service/LikeService.java`
+- [X] T100 [US4] [BE-COMMENT] Implement like toggle logic in `backend/src/main/java/com/sunbooking/domain/review/service/LikeService.java`
 - [X] T101 [US4] [BE-COMMENT] Implement comment APIs in `backend/src/main/java/com/sunbooking/controller/CommentController.java`
-- [ ] T102 [US4] [BE-COMMENT] Implement like APIs in `backend/src/main/java/com/sunbooking/controller/LikeController.java`
-- [ ] T103 [P] [US4] [FE-REVIEW] Implement comment and like API client in `frontend/src/services/commentService.ts`
+- [X] T102 [US4] [BE-COMMENT] Implement like APIs in `backend/src/main/java/com/sunbooking/domain/review/controller/LikeController.java`
+- [X] T103 [P] [US4] [FE-REVIEW] Implement comment and like API client in `frontend/src/services/commentService.ts`
 - [X] T104 [P] [US4] [FE-REVIEW] Create comment thread UI in `frontend/src/components/reviews/CommentThread.tsx`
 - [X] T105 [P] [US4] [FE-REVIEW] Create reply input UI in `frontend/src/components/reviews/ReplyInput.tsx`
-- [ ] T106 [P] [US4] [FE-REVIEW] Create like button UI in `frontend/src/components/reviews/LikeButton.tsx`
+- [X] T106 [P] [US4] [FE-REVIEW] Create like button UI in `frontend/src/components/reviews/LikeButton.tsx`
 
 ## Phase 11: Admin Frontend Foundation (US5)
 

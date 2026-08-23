@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getReviews, type Review } from '../../services/reviewService'
 import CommentThread from './CommentThread'
+import LikeButton from './LikeButton'
 
 type ReviewListProps = {
   tourId?: number
@@ -76,6 +77,8 @@ export default function ReviewList({ tourId, refreshKey }: ReviewListProps) {
           )}
 
           <small>{new Date(review.createdAt).toLocaleString()}</small>
+
+          <LikeButton reviewId={review.id} />
 
           <CommentThread reviewId={review.id} />
         </article>
