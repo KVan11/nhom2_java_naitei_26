@@ -1,5 +1,8 @@
 package com.sunbooking.domain.user.dto;
 
+import com.sunbooking.domain.user.entity.User;
+import java.time.LocalDateTime;
+
 public class UserResponse {
     private Long userId;
     private String username;
@@ -10,6 +13,11 @@ public class UserResponse {
     private String role;
     private String status;
     private String token;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public UserResponse() {
+    }
 
     public UserResponse(Long userId, String username, String fullName, String email, String phone, String avatar, String role, String status) {
         this.userId = userId;
@@ -32,6 +40,46 @@ public class UserResponse {
         this.role = role;
         this.status = status;
         this.token = token;
+    }
+
+    public UserResponse(Long userId, String username, String fullName, String email, String phone, String avatar, String role, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.userId = userId;
+        this.username = username;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.avatar = avatar;
+        this.role = role;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public static UserResponse fromEntity(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserResponse response = new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getAvatar(),
+                user.getRole(),
+                user.getStatus()
+        );
+        response.setCreatedAt(user.getCreatedAt());
+        response.setUpdatedAt(user.getUpdatedAt());
+        return response;
+    }
+
+    public static UserResponse fromEntityWithToken(User user, String token) {
+        UserResponse response = fromEntity(user);
+        if (response != null) {
+            response.setToken(token);
+        }
+        return response;
     }
 
     public Long getUserId() {
@@ -104,5 +152,21 @@ public class UserResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
