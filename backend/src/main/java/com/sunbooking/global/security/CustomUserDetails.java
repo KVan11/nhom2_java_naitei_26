@@ -9,8 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.StringUtils;
-import org.springframework.util.StringUtils;
-
 import com.sunbooking.domain.user.entity.User;
 
 public class CustomUserDetails implements UserDetails, OAuth2User {
