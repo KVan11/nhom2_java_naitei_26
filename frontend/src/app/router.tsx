@@ -14,6 +14,7 @@ import BookingHistoryPage from "@/features/booking/pages/BookingHistoryPage";
 import ProfilePage from "@/features/user/pages/ProfilePage";
 import { RouteMiddleware } from "@/app/middleware/RouteMiddleware";
 import VietQrCheckoutPage from "@/features/payment/pages/VietQrCheckoutPage";
+import PaymentResultPage from "@/features/payment/pages/PaymentResultPage";
 
 
 export const router = createBrowserRouter([
@@ -97,6 +98,14 @@ export const router = createBrowserRouter([
       <RouteMiddleware type="guest">
         <RegisterPage />
       </RouteMiddleware>
+    ),
+  },
+  {
+    path: "payment/result",
+    element: (
+        <RouteMiddleware type="auth">
+          <PaymentResultPage />
+        </RouteMiddleware>
     ),
   },
 ]);

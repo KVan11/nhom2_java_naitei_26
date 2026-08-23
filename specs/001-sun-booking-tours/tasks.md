@@ -103,10 +103,10 @@
 - [x] T078 [US3] [BE-PAYMENT] Implement webhook transaction matching, idempotency, and capacity confirmation in `backend/src/main/java/com/sunbooking/service/PaymentConfirmationService.java`
 - [x] T079 [US3] [BE-PAYMENT] Implement SePay webhook endpoint in `backend/src/main/java/com/sunbooking/controller/PaymentWebhookController.java`
 - [x] T080 [US3] [BE-PAYMENT] Implement payment status query API in `backend/src/main/java/com/sunbooking/controller/PaymentController.java`
-- [ ] T081 [P] [US3] [FE-PAYMENT] Implement payment API client in `frontend/src/services/paymentService.ts`
-- [ ] T082 [US3] [FE-PAYMENT] Create VietQR checkout page in `frontend/src/pages/checkout/VietQrCheckoutPage.tsx`
-- [ ] T083 [US3] [FE-PAYMENT] Implement payment countdown frontend in `frontend/src/components/payment/PaymentCountdown.tsx`
-- [ ] T084 [US3] [FE-PAYMENT] Create payment success/failure feedback pages in `frontend/src/pages/checkout/PaymentResultPage.tsx`
+- [x] T081 [P] [US3] [FE-PAYMENT] Implement payment API client in `frontend/src/services/paymentService.ts`
+- [x] T082 [US3] [FE-PAYMENT] Create VietQR checkout page in `frontend/src/pages/checkout/VietQrCheckoutPage.tsx`
+- [x] T083 [US3] [FE-PAYMENT] Implement payment countdown frontend in `frontend/src/components/payment/PaymentCountdown.tsx`
+- [x] T084 [US3] [FE-PAYMENT] Create payment success/failure feedback pages in `frontend/src/pages/checkout/PaymentResultPage.tsx`
 
 ## Phase 9: Reviews / Rating (US4)
 
