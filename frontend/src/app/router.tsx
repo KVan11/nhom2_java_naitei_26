@@ -3,7 +3,14 @@ import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
 import MainLayout from "@/app/layouts/MainLayout";
 import Home from "@/features/home/pages/Home";
-import AdminDashboardPage from "@/pages/AdminDashboardPage";
+import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
+import AdminLayout from "@/pages/admin/AdminLayout";
+import AdminManageUsersPage from "@/pages/admin/users/AdminManageUsersPage";
+import AdminManageToursPage from "@/pages/admin/tours/AdminManageToursPage";
+import AdminManageBookingRequestsPage from "@/pages/admin/bookings/AdminManageBookingRequestsPage";
+import AdminManageReviewsPage from "@/pages/admin/reviews/AdminManageReviewsPage";
+import AdminRevenuePage from "@/pages/admin/revenue/AdminRevenuePage";
+import AdminManageCategoriesPage from "@/pages/admin/categories/AdminManageCategoriesPage";
 import TourList from "@/features/tour/pages/TourList";
 import TourDetail from "@/features/tour/pages/TourDetail";
 import PlaceList from "@/features/place/pages/PlaceList";
@@ -80,9 +87,39 @@ export const router = createBrowserRouter([
     path: "/admin",
     element: (
       <RouteMiddleware type="auth">
-        <AdminDashboardPage />
+        <AdminLayout />
       </RouteMiddleware>
     ),
+    children: [
+      {
+        index: true,
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "users",
+        element: <AdminManageUsersPage />,
+      },
+      {
+        path: "tours",
+        element: <AdminManageToursPage />,
+      },
+      {
+        path: "bookings",
+        element: <AdminManageBookingRequestsPage />,
+      },
+      {
+        path: "reviews",
+        element: <AdminManageReviewsPage />,
+      },
+      {
+        path: "revenue",
+        element: <AdminRevenuePage />,
+      },
+      {
+        path: "categories",
+        element: <AdminManageCategoriesPage />,
+      },
+    ],
   },
   {
     path: "/login",

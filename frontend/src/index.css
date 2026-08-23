@@ -10,10 +10,32 @@
   --color-brand-darker: #b31003; /* Sun red darker */
 
   /* --- SEMANTIC COLORS --- */
-  --color-background: #f9fafb; /* slate-50 */
+  --color-background: #f8fafc; /* slate-50 */
   --color-foreground: #0f172a; /* slate-900 */
-  --color-muted: #94a3b8; /* slate-400 */
+  --color-muted: #f1f5f9; /* slate-100 */
+  --color-muted-foreground: #64748b; /* slate-500 */
   --color-border: #e2e8f0; /* slate-200 */
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
+  --color-primary: #0f172a;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #0f172a;
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #0f172a;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-ring: #0f172a;
+  --color-input: #e2e8f0;
+
+  /* --- CHART COLORS --- */
+  --color-chart-1: #0f172a;
+  --color-chart-2: #ff1d06;
+  --color-chart-3: #10b981;
+  --color-chart-4: #f59e0b;
+  --color-chart-5: #6366f1;
 }
 
 html,
