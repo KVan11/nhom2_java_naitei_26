@@ -10,19 +10,19 @@ export function useRegisterForm() {
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
 
-  const update = (k: string) => (v: string) => { 
-    setForm((p) => ({ ...p, [k]: v })); 
-    setErrors((p) => ({ ...p, [k]: "" })); 
+  const update = (k: string) => (v: string) => {
+    setForm((p) => ({ ...p, [k]: v }));
+    setErrors((p) => ({ ...p, [k]: "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validateRegister(form);
-    if (Object.keys(errs).length) { 
-      setErrors(errs); 
-      return; 
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
     }
-    
+
     setLoading(true);
     try {
       await authService.register({

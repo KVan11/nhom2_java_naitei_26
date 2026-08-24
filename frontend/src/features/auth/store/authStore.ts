@@ -12,6 +12,7 @@ interface AuthActions {
   register: (data: RegisterRequest) => Promise<User>;
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
+  updateUser: (user: User) => void;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>((set) => ({
@@ -63,5 +64,10 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     } finally {
       set({ loading: false });
     }
+  },
+
+  updateUser: (user: User) => {
+    localStorage.setItem('user', JSON.stringify(user));
+    set({ user });
   }
 }));

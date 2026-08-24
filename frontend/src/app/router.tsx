@@ -22,6 +22,7 @@ import ProfilePage from "@/features/user/pages/ProfilePage";
 import { RouteMiddleware } from "@/app/middleware/RouteMiddleware";
 import VietQrCheckoutPage from "@/features/payment/pages/VietQrCheckoutPage";
 import PaymentResultPage from "@/features/payment/pages/PaymentResultPage";
+import OAuth2RedirectPage from "@/features/auth/pages/OAuth2RedirectPage";
 
 export const router = createBrowserRouter([
   {
@@ -135,6 +136,10 @@ export const router = createBrowserRouter([
         <RegisterPage />
       </RouteMiddleware>
     ),
+  },
+  {
+    path: "/oauth2/redirect",
+    element: <OAuth2RedirectPage />,
   },
   {
     path: "payment/result",
