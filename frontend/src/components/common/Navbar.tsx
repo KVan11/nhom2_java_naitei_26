@@ -71,7 +71,7 @@ export default function Navbar() {
                 >
                   <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center font-bold text-sm text-white">
                     {user.fullName?.charAt(0) ||
-                      user.username.charAt(0).toUpperCase()}
+                      user.username?.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium">
                     {user.fullName || user.username}
