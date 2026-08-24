@@ -2,6 +2,7 @@ package com.sunbooking.domain.booking.controller.admin;
 
 import com.sunbooking.domain.booking.dto.admin.AdminBookingFilter;
 import com.sunbooking.domain.booking.dto.admin.AdminBookingResponse;
+import com.sunbooking.domain.booking.dto.admin.AdminBookingStatsResponse;
 import com.sunbooking.domain.booking.dto.admin.AdminBookingStatusUpdateRequest;
 import com.sunbooking.domain.booking.service.admin.AdminBookingService;
 import jakarta.validation.Valid;
@@ -39,6 +40,12 @@ public class AdminBookingController {
             @PathVariable Long id,
             @Valid @RequestBody AdminBookingStatusUpdateRequest request) {
         AdminBookingResponse response = adminBookingService.updateBookingStatus(id, request.getStatus());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<AdminBookingStatsResponse> getBookingStats() {
+        AdminBookingStatsResponse response = adminBookingService.getBookingStats();
         return ResponseEntity.ok(response);
     }
 }

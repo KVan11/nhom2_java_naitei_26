@@ -321,7 +321,7 @@ export default function AdminDashboardPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <OverviewChart />
+                <OverviewChart data={[]} />
               </CardContent>
             </Card>
 
