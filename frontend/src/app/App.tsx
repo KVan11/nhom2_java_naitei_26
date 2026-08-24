@@ -19,7 +19,7 @@ export default function App() {
   return (
     <TooltipProvider>
       <RouterProvider router={router} />
-      <Toaster position="top-right" richColors />
+      <Toaster position="bottom-right" richColors />
     </TooltipProvider>
   );
 }

@@ -3,6 +3,7 @@ package com.sunbooking.domain.booking.service.admin;
 import com.sunbooking.domain.booking.dto.BookingTravelerDto;
 import com.sunbooking.domain.booking.dto.admin.AdminBookingFilter;
 import com.sunbooking.domain.booking.dto.admin.AdminBookingResponse;
+import com.sunbooking.domain.booking.dto.admin.AdminBookingStatsResponse;
 import com.sunbooking.domain.booking.entity.Booking;
 import com.sunbooking.domain.booking.entity.BookingStatus;
 import com.sunbooking.domain.booking.repository.BookingRepository;
@@ -90,29 +91,72 @@ public class AdminBookingServiceImpl implements AdminBookingService {
         }
     }
 
-    private AdminBookingResponse mapToAdminResponse(Booking booking, boolean includeTravelers) {
-        List<BookingTravelerDto> travelers = null;
-        if (includeTravelers && booking.getTravelers() != null) {
-            travelers = booking.getTravelers().stream()
-                    .map(t -> BookingTravelerDto.builder()
-                            .fullName(t.getFullName())
-                            .gender(t.getGender())
-                            .dateOfBirth(t.getDateOfBirth())
-                            .phone(t.getPhone())
-                            .travelerType(t.getTravelerType())
-                            .build())
-                    .collect(Collectors.toList());
+    @Override
+    @Transactional(readOnly = true)
+    public AdminBookingStatsResponse getBookingStats() {
+        List<Object[]> results = bookingRepository.countBookingsByStatus();
+        
+        long total = 0;
+        long confirmed = 0;
+        long pending = 0;
+        long failed = 0;
+        
+        for (Object[] row : results) {
+            BookingStatus status = (BookingStatus) row[0];
+            long count = ((Number) row[1]).longValue();
+            
+            total += count;
+            
+            switch (status) {
+                case CONFIRMED:
+                    confirmed += count;
+                    break;
+                case PENDING_PAYMENT:
+                    pending += count;
+                    break;
+                case CANCELLED:
+                case EXPIRED:
+                    failed += count;
+                    break;
+            }
         }
+        
+        return AdminBookingStatsResponse.builder()
+                .total(total)
+                .confirmed(confirmed)
+                .pending(pending)
+                .failed(failed)
+                .build();
+    }
 
+    private AdminBookingResponse mapToAdminResponse(Booking booking, boolean isDetail) {
+        List<BookingTravelerDto> travelers = null;
         PaymentSummaryDto paymentSummary = null;
-        Payment payment = paymentRepository.findTopByBooking_IdOrderByCreatedAtDesc(booking.getId()).orElse(null);
-        if (payment != null) {
-            paymentSummary = PaymentSummaryDto.builder()
-                    .status(payment.getStatus())
-                    .amount(payment.getAmount())
-                    .transactionReference(payment.getTransactionReference())
-                    .paidAt(payment.getPaidAt())
-                    .build();
+
+        // Only fetch expensive relations (Travelers, Payments) when viewing details (isDetail = true)
+        // This prevents the N+1 Query problem on the list page which drastically slows down load times.
+        if (isDetail) {
+            if (booking.getTravelers() != null) {
+                travelers = booking.getTravelers().stream()
+                        .map(t -> BookingTravelerDto.builder()
+                                .fullName(t.getFullName())
+                                .gender(t.getGender())
+                                .dateOfBirth(t.getDateOfBirth())
+                                .phone(t.getPhone())
+                                .travelerType(t.getTravelerType())
+                                .build())
+                        .collect(Collectors.toList());
+            }
+
+            Payment payment = paymentRepository.findTopByBooking_IdOrderByCreatedAtDesc(booking.getId()).orElse(null);
+            if (payment != null) {
+                paymentSummary = PaymentSummaryDto.builder()
+                        .status(payment.getStatus())
+                        .amount(payment.getAmount())
+                        .transactionReference(payment.getTransactionReference())
+                        .paidAt(payment.getPaidAt())
+                        .build();
+            }
         }
 
         return AdminBookingResponse.builder()
