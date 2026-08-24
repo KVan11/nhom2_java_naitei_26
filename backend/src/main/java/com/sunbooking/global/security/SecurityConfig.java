@@ -1,7 +1,8 @@
 package com.sunbooking.global.security;
 
-import java.util.List;
-
+import com.sunbooking.global.security.oauth2.CustomOAuth2UserService;
+import com.sunbooking.global.security.oauth2.OAuth2AuthenticationFailureHandler;
+import com.sunbooking.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,9 +20,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.sunbooking.global.security.oauth2.CustomOAuth2UserService;
-import com.sunbooking.global.security.oauth2.OAuth2AuthenticationFailureHandler;
-import com.sunbooking.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import java.util.List;
+
 
 @Configuration
 @EnableWebSecurity
@@ -35,10 +35,10 @@ public class SecurityConfig {
         private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
         public SecurityConfig(JwtUtils jwtUtils,
-                        CustomOAuth2UserService customOAuth2UserService,
-                        OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
-                        OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
-                        HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+                              CustomOAuth2UserService customOAuth2UserService,
+                              OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
+                              OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
+                              HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
                 this.jwtUtils = jwtUtils;
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
@@ -53,44 +53,48 @@ public class SecurityConfig {
 
         @Bean
         public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-                        throws Exception {
+                throws Exception {
                 return authenticationConfiguration.getAuthenticationManager();
         }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                        JwtAuthenticationFilter jwtAuthenticationFilter)
-                        throws Exception {
+                                                       JwtAuthenticationFilter jwtAuthenticationFilter)
+                throws Exception {
                 http
-                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                                .csrf(AbstractHttpConfigurer::disable)
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .authorizeHttpRequests(authorize -> authorize
-                                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
-                                                                "/swagger-ui.html")
-                                                .permitAll()
-                                                .requestMatchers("/api/auth/**", "/oauth2/**", "/login/oauth2/code/**")
-                                                .permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/places", "/api/places/**",
-                                                                "/api/food", "/api/food/**", "/api/news",
-                                                                "/api/news/**", "/api/reviews/**")
-                                                .permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/tours/**",
-                                                                "/api/categories/**")
-                                                .permitAll()
-                                                .anyRequest().authenticated())
-                                .oauth2Login(oauth2 -> oauth2
-                                                .authorizationEndpoint(authorization -> authorization
-                                                                .baseUri("/oauth2/authorization")
-                                                                .authorizationRequestRepository(
-                                                                                httpCookieOAuth2AuthorizationRequestRepository))
-                                                .redirectionEndpoint(redirection -> redirection
-                                                                .baseUri("/login/oauth2/code/*"))
-                                                .userInfoEndpoint(userInfo -> userInfo
-                                                                .userService(customOAuth2UserService))
-                                                .successHandler(oAuth2AuthenticationSuccessHandler)
-                                                .failureHandler(oAuth2AuthenticationFailureHandler));
+                        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                        // CSRF is currently disabled, which allows Webhooks to post data
+                        .csrf(AbstractHttpConfigurer::disable)
+                        .sessionManagement(session -> session
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .authorizeHttpRequests(authorize -> authorize
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
+                                        "/swagger-ui.html")
+                                .permitAll()
+                                .requestMatchers("/api/auth/**", "/oauth2/**", "/login/oauth2/code/**")
+                                .permitAll()
+                                // ALLOW SePay Webhook and Payment Status Polling
+                                .requestMatchers("/api/payments/webhook", "/api/payments/**")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/places", "/api/places/**",
+                                        "/api/food", "/api/food/**", "/api/news",
+                                        "/api/news/**", "/api/reviews/**")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/tours/**",
+                                        "/api/categories/**")
+                                .permitAll()
+                                .anyRequest().authenticated())
+                        .oauth2Login(oauth2 -> oauth2
+                                .authorizationEndpoint(authorization -> authorization
+                                        .baseUri("/oauth2/authorization")
+                                        .authorizationRequestRepository(
+                                                httpCookieOAuth2AuthorizationRequestRepository))
+                                .redirectionEndpoint(redirection -> redirection
+                                        .baseUri("/login/oauth2/code/*"))
+                                .userInfoEndpoint(userInfo -> userInfo
+                                        .userService(customOAuth2UserService))
+                                .successHandler(oAuth2AuthenticationSuccessHandler)
+                                .failureHandler(oAuth2AuthenticationFailureHandler));
 
                 http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -103,7 +107,7 @@ public class SecurityConfig {
                 configuration.setAllowedOrigins(List.of("http://localhost:5173"));
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                 configuration.setAllowedHeaders(
-                                List.of("Authorization", "Content-Type", "Cache-Control", "X-CSRF-TOKEN"));
+                        List.of("Authorization", "Content-Type", "Cache-Control", "X-CSRF-TOKEN"));
                 configuration.setExposedHeaders(List.of("Authorization", "X-CSRF-TOKEN"));
                 configuration.setAllowCredentials(true);
 
