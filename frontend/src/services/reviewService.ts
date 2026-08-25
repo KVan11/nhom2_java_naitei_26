@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:8080'
+import axios from "axios"
+
+import { apiClient } from "@/services/apiClient"
 
 export type ReviewImage = {
   id: number
@@ -28,54 +30,54 @@ export type CreateReviewRequest = {
   imageUrls?: string[]
 }
 
-async function parseError(response: Response): Promise<string> {
-  try {
-    const body = await response.json() as {
-      message?: string
-      details?: Record<string, string>
-    }
+export type UpdateReviewRequest = {
+  content: string
+  rating: number
+  imageUrls?: string[]
+}
 
-    if (body.message) {
-      return body.message
-    }
+export function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as
+      | { message?: string; details?: Record<string, string> }
+      | undefined
 
-    if (body.details) {
-      return Object.values(body.details).join(', ')
+    if (data?.message) {
+      return data.message
     }
-  } catch {
-    // Ignore malformed/non-JSON error bodies and use the HTTP fallback below.
+    if (data?.details) {
+      return Object.values(data.details).join(", ")
+    }
   }
 
-  return `Request failed with status ${response.status}`
+  return error instanceof Error && error.message ? error.message : fallback
 }
 
 export async function getReviews(tourId?: number): Promise<Review[]> {
-  const query = tourId == null ? '' : `?tourId=${encodeURIComponent(tourId)}`
-  const response = await fetch(`${API_BASE_URL}/api/reviews${query}`, {
-    method: 'GET',
-    credentials: 'include',
+  const response = await apiClient.get<Review[]>("/api/reviews", {
+    params: tourId == null ? undefined : { tourId },
   })
+  return response.data
+}
 
-  if (!response.ok) {
-    throw new Error(await parseError(response))
-  }
-
-  return response.json() as Promise<Review[]>
+export async function getMyReviews(): Promise<Review[]> {
+  const response = await apiClient.get<Review[]>("/api/reviews/me")
+  return response.data
 }
 
 export async function createReview(request: CreateReviewRequest): Promise<Review> {
-  const response = await fetch(`${API_BASE_URL}/api/reviews`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  })
+  const response = await apiClient.post<Review>("/api/reviews", request)
+  return response.data
+}
 
-  if (!response.ok) {
-    throw new Error(await parseError(response))
-  }
+export async function updateMyReview(
+  reviewId: number,
+  request: UpdateReviewRequest,
+): Promise<Review> {
+  const response = await apiClient.put<Review>(`/api/reviews/${reviewId}`, request)
+  return response.data
+}
 
-  return response.json() as Promise<Review>
+export async function deleteMyReview(reviewId: number): Promise<void> {
+  await apiClient.delete(`/api/reviews/${reviewId}`)
 }

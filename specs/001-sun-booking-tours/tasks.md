@@ -330,10 +330,10 @@
 
 ## Phase 15: Admin Review Management (US5)
 
-- [ ] T125 [US5] [BE-ADMIN] Implement Admin Review read and delete operations in `backend/src/main/java/com/sunbooking/domain/review/service/admin/AdminReviewService.java`
-- [ ] T126 [US5] [BE-ADMIN] Implement `AdminReviewController` in `backend/src/main/java/com/sunbooking/domain/review/controller/admin/AdminReviewController.java`
-- [ ] T127 [P] [US5] [FE-ADMIN] Implement admin reviews API client in `frontend/src/services/adminReviewService.ts`
-- [ ] T128 [US5] [FE-ADMIN] Create Admin reviews page in `frontend/src/pages/admin/reviews/AdminManageReviewsPage.tsx`
+- [X] T125 [US5] [BE-ADMIN] Implement Admin Review read and delete operations in `backend/src/main/java/com/sunbooking/domain/review/service/admin/AdminReviewService.java`
+- [X] T126 [US5] [BE-ADMIN] Implement `AdminReviewController` in `backend/src/main/java/com/sunbooking/domain/review/controller/admin/AdminReviewController.java`
+- [X] T127 [P] [US5] [FE-ADMIN] Implement admin reviews API client in `frontend/src/services/adminReviewService.ts`
+- [X] T128 [US5] [FE-ADMIN] Create Admin reviews page in `frontend/src/pages/admin/reviews/AdminManageReviewsPage.tsx`
 
 ## Phase 16: Admin Revenue (US5)
 
