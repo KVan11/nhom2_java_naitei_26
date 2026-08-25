@@ -1,6 +1,7 @@
 package com.sunbooking.domain.user.service;
 
 import com.sunbooking.domain.user.dto.LoginRequest;
+import com.sunbooking.domain.user.dto.LoginResult;
 import com.sunbooking.domain.user.dto.RegisterRequest;
 import com.sunbooking.domain.user.dto.UserResponse;
 import com.sunbooking.domain.user.entity.User;
@@ -22,7 +23,8 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -31,7 +33,8 @@ public class AuthService {
 
     @Transactional
     public UserResponse register(RegisterRequest registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+        String username = registerRequest.getUsername().toLowerCase();
+        if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username is already taken");
         }
         if (registerRequest.getEmail() != null && userRepository.existsByEmail(registerRequest.getEmail())) {
@@ -39,7 +42,7 @@ public class AuthService {
         }
 
         User user = new User();
-        user.setUsername(registerRequest.getUsername());
+        user.setUsername(username);
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setFullName(registerRequest.getFullName());
         user.setEmail(registerRequest.getEmail());
@@ -57,19 +60,26 @@ public class AuthService {
                 savedUser.getPhone(),
                 savedUser.getAvatar(),
                 savedUser.getRole(),
-                savedUser.getStatus()
-        );
+                savedUser.getStatus());
     }
 
-    public String login(LoginRequest loginRequest, AuthenticationResponseBuilder responseBuilder) {
+    public LoginResult login(LoginRequest loginRequest) {
+        String username = loginRequest.getUsername().toLowerCase();
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(username, loginRequest.getPassword()));
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof CustomUserDetails userDetails)) {
+            throw new org.springframework.security.authentication.InternalAuthenticationServiceException(
+                    "Expected CustomUserDetails but got " + principal.getClass().getName());
+        }
+
         User user = userDetails.getUser();
+        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            throw new org.springframework.security.authentication.DisabledException("ACCOUNT_DISABLED");
+        }
 
-        responseBuilder.setUserResponse(new UserResponse(
+        UserResponse userResponse = new UserResponse(
                 user.getId(),
                 user.getUsername(),
                 user.getFullName(),
@@ -77,21 +87,10 @@ public class AuthService {
                 user.getPhone(),
                 user.getAvatar(),
                 user.getRole(),
-                user.getStatus()
-        ));
+                user.getStatus());
 
-        return jwtUtils.generateTokenFromUsername(user.getUsername());
-    }
-
-    public static class AuthenticationResponseBuilder {
-        private UserResponse userResponse;
-
-        public UserResponse getUserResponse() {
-            return userResponse;
-        }
-
-        public void setUserResponse(UserResponse userResponse) {
-            this.userResponse = userResponse;
-        }
+        String token = jwtUtils.generateToken(userDetails);
+        userResponse.setToken(token);
+        return new LoginResult(token, userResponse);
     }
 }

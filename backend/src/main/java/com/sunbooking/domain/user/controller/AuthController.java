@@ -1,13 +1,15 @@
 package com.sunbooking.domain.user.controller;
 
 import com.sunbooking.domain.user.dto.LoginRequest;
+import com.sunbooking.domain.user.dto.LoginResult;
 import com.sunbooking.domain.user.dto.RegisterRequest;
 import com.sunbooking.domain.user.dto.UserResponse;
 import com.sunbooking.domain.user.service.AuthService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -33,32 +35,33 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        AuthService.AuthenticationResponseBuilder builder = new AuthService.AuthenticationResponseBuilder();
-        String token = authService.login(loginRequest, builder);
+        LoginResult loginResult = authService.login(loginRequest);
+        String token = loginResult.token();
 
-        Cookie cookie = new Cookie("jwt", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Secure can be true in production (HTTPS)
-        cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60);
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                .httpOnly(true)
+                .secure(true) // Secure in production
+                .path("/")
+                .maxAge(15 * 60) // 15 minutes
+                .sameSite("Strict")
+                .build();
 
-        response.addCookie(cookie);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        UserResponse userResponse = builder.getUserResponse();
-        userResponse.setToken(token);
-
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.ok(loginResult.userResponse());
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("jwt", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
 
-        response.addCookie(cookie);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         SecurityContextHolder.clearContext();
 
         Map<String, String> responseBody = new HashMap<>();

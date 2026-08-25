@@ -62,7 +62,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isAccountNonLocked() {
-        return "ACTIVE".equalsIgnoreCase(user.getStatus());
+        return true; // We check status after password validation to prevent enumeration
     }
 
     @Override
@@ -72,7 +72,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isEnabled() {
-        return "ACTIVE".equalsIgnoreCase(user.getStatus());
+        return true; // We check status after password validation to prevent enumeration
     }
 
     @Override
