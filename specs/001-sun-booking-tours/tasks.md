@@ -34,8 +34,8 @@
 - [x] T021 [P] [US1] [BE-USER] Create user profile DTOs in `backend/src/main/java/com/sunbooking/domain/user/dto/`
 - [x] T022 [US1] [BE-USER] Implement profile management in `backend/src/main/java/com/sunbooking/domain/user/service/UserService.java`
 - [x] T023 [US1] [BE-USER] Implement user profile API in `backend/src/main/java/com/sunbooking/domain/user/controller/UserController.java`
-- [ ] T024 [P] [US1] [FE-USER] Implement user API client in `frontend/src/features/user/services/userService.ts`
-- [ ] T025 [US1] [FE-USER] Create Profile page in `frontend/src/features/user/pages/ProfilePage.tsx`
+- [x] T024 [P] [US1] [FE-USER] Implement user API client in `frontend/src/features/user/services/userService.ts`
+- [x] T025 [US1] [FE-USER] Create Profile page in `frontend/src/features/user/pages/ProfilePage.tsx`
 
 ## Phase 5: Tour / Category (US2)
 
@@ -196,8 +196,8 @@
 - [x] T021 [P] [US1] [BE-USER] Create user profile DTOs in `backend/src/main/java/com/sunbooking/domain/user/dto/`
 - [x] T022 [US1] [BE-USER] Implement profile management in `backend/src/main/java/com/sunbooking/domain/user/service/UserService.java`
 - [x] T023 [US1] [BE-USER] Implement user profile API in `backend/src/main/java/com/sunbooking/domain/user/controller/UserController.java`
-- [ ] T024 [P] [US1] [FE-USER] Implement user API client in `frontend/src/features/user/services/userService.ts`
-- [ ] T025 [US1] [FE-USER] Create Profile page in `frontend/src/features/user/pages/ProfilePage.tsx`
+- [x] T024 [P] [US1] [FE-USER] Implement user API client in `frontend/src/features/user/services/userService.ts`
+- [x] T025 [US1] [FE-USER] Create Profile page in `frontend/src/features/user/pages/ProfilePage.tsx`
 
 ## Phase 5: Tour / Category (US2)
 

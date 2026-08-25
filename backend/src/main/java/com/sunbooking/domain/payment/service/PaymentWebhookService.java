@@ -35,6 +35,10 @@ public class PaymentWebhookService {
             byte[] hashBytes = sha256HMAC.doFinal(rawBody.getBytes(StandardCharsets.UTF_8));
             String computedSignature = Base64.getEncoder().encodeToString(hashBytes);
 
+            System.out.println("--- EXPECTED SIGNATURE FOR INSOMNIA ---");
+            System.out.println(computedSignature);
+            System.out.println("---------------------------------------");
+
             // Compare computed hash with header signature
             return computedSignature.equals(signatureHeader);
         } catch (Exception e) {

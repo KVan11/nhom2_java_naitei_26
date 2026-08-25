@@ -25,7 +25,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findTopByBooking_IdOrderByCreatedAtDesc(Long bookingId);
 
     // Total success revenue
-    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.status = 'SUCCESS'")
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.status = 'SUCCESS'")
     BigDecimal sumTotalRevenue();
 
     // Daily revenue for chart (last 30 days)

@@ -50,3 +50,5 @@ replay_pid*
 Thumbs.db
 
 application-secret.yml
+
+PaymentWebhookIntegrationTest.Java
