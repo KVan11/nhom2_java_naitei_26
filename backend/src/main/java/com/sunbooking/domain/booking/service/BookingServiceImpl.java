@@ -39,15 +39,28 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Tour departure not found"));
 
         int numberOfPeople = request.getTravelers().size();
-        
-        // Check slot
-        if (departure.getAvailableSlot() < numberOfPeople) {
-            throw new IllegalArgumentException("Not enough available slots for this departure");
+
+        java.time.LocalDate today = java.time.LocalDate.now();
+        for (BookingTravelerDto tDto : request.getTravelers()) {
+            if (tDto.getDateOfBirth() != null) {
+                int age = java.time.Period.between(tDto.getDateOfBirth(), today).getYears();
+                if (tDto.getTravelerType() == com.sunbooking.domain.booking.entity.TravelerType.INFANT && age >= 2) {
+                    throw new IllegalArgumentException("Infant must be under 2 years old");
+                }
+                if (tDto.getTravelerType() == com.sunbooking.domain.booking.entity.TravelerType.CHILD
+                        && (age < 2 || age >= 12)) {
+                    throw new IllegalArgumentException("Child must be between 2 and 11 years old");
+                }
+                if (tDto.getTravelerType() == com.sunbooking.domain.booking.entity.TravelerType.ADULT && age < 12) {
+                    throw new IllegalArgumentException("Adult must be at least 12 years old");
+                }
+            }
         }
 
-        // Temporarily reserve slots
-        departure.setAvailableSlot(departure.getAvailableSlot() - numberOfPeople);
-        tourDepartureRepository.save(departure);
+        int updatedRows = tourDepartureRepository.deductAvailableSlots(departure.getId(), numberOfPeople);
+        if (updatedRows == 0) {
+            throw new IllegalArgumentException("Not enough available slots for this departure");
+        }
 
         BigDecimal totalPrice = departure.getPrice().multiply(BigDecimal.valueOf(numberOfPeople));
 
@@ -93,17 +106,21 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-        // Verify the booking belongs to the user
         if (!booking.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("You are not authorized to cancel this booking");
         }
 
-        // Only PENDING_PAYMENT bookings can be cancelled by user
         if (booking.getStatus() != BookingStatus.PENDING_PAYMENT) {
             throw new IllegalArgumentException("Only pending bookings can be cancelled");
         }
 
-        // Release reserved slots
+        if (booking.getDeparture().getDepartureDate() != null) {
+            java.time.LocalDateTime departureTime = booking.getDeparture().getDepartureDate().atStartOfDay();
+            if (departureTime.minusHours(24).isBefore(LocalDateTime.now())) {
+                throw new IllegalArgumentException("Cannot cancel booking within 24 hours of departure");
+            }
+        }
+
         TourDeparture departure = booking.getDeparture();
         departure.setAvailableSlot(departure.getAvailableSlot() + booking.getNumberOfPeople());
         tourDepartureRepository.save(departure);

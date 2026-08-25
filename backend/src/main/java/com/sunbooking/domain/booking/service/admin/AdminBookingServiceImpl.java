@@ -57,6 +57,16 @@ public class AdminBookingServiceImpl implements AdminBookingService {
         // Validate transition
         validateStatusTransition(currentStatus, newStatus);
 
+        // Cannot cancel if tour already departed
+        if (newStatus == BookingStatus.CANCELLED) {
+            if (booking.getDeparture().getDepartureDate() != null) {
+                java.time.LocalDateTime departureTime = booking.getDeparture().getDepartureDate().atStartOfDay();
+                if (departureTime.isBefore(java.time.LocalDateTime.now())) {
+                    throw new IllegalArgumentException("Cannot cancel a booking for a tour that has already departed");
+                }
+            }
+        }
+
         // Capacity release logic
         if ((currentStatus == BookingStatus.PENDING_PAYMENT || currentStatus == BookingStatus.CONFIRMED) 
             && (newStatus == BookingStatus.CANCELLED || newStatus == BookingStatus.EXPIRED)) {

@@ -13,7 +13,6 @@ import java.util.Optional;
 @Repository
 public interface TourDepartureRepository extends JpaRepository<TourDeparture, Long> {
 
-    // Atomic update: only subtract if availableSlot >= requested slots
     @Modifying
     @Query("UPDATE TourDeparture d SET d.availableSlot = d.availableSlot - :slots " +
             "WHERE d.id = :id AND d.availableSlot >= :slots")

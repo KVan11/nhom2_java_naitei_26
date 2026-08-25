@@ -32,6 +32,7 @@ public class BookingRequest {
     private String contactEmail;
 
     @NotEmpty(message = "Travelers list cannot be empty")
+    @jakarta.validation.constraints.Size(max = 10, message = "Maximum 10 travelers allowed per booking")
     @Valid
     private List<BookingTravelerDto> travelers;
 }
