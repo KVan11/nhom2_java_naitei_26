@@ -14,6 +14,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -21,6 +25,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 
 @Configuration
@@ -33,17 +38,20 @@ public class SecurityConfig {
         private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
         private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
         private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+        private final ClientRegistrationRepository clientRegistrationRepository;
 
         public SecurityConfig(JwtUtils jwtUtils,
                               CustomOAuth2UserService customOAuth2UserService,
                               OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
                               OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
-                              HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+                              HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository,
+                              ClientRegistrationRepository clientRegistrationRepository) {
                 this.jwtUtils = jwtUtils;
                 this.customOAuth2UserService = customOAuth2UserService;
                 this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
                 this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
                 this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
+                this.clientRegistrationRepository = clientRegistrationRepository;
         }
 
         @Bean
@@ -55,6 +63,16 @@ public class SecurityConfig {
         public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
                 throws Exception {
                 return authenticationConfiguration.getAuthenticationManager();
+        }
+
+        private OAuth2AuthorizationRequestResolver authorizationRequestResolver() {
+                DefaultOAuth2AuthorizationRequestResolver resolver =
+                        new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
+                
+                resolver.setAuthorizationRequestCustomizer(customizer -> customizer
+                        .additionalParameters(params -> params.put("prompt", "select_account")));
+                        
+                return resolver;
         }
 
         @Bean
@@ -87,6 +105,7 @@ public class SecurityConfig {
                         .oauth2Login(oauth2 -> oauth2
                                 .authorizationEndpoint(authorization -> authorization
                                         .baseUri("/oauth2/authorization")
+                                        .authorizationRequestResolver(authorizationRequestResolver())
                                         .authorizationRequestRepository(
                                                 httpCookieOAuth2AuthorizationRequestRepository))
                                 .redirectionEndpoint(redirection -> redirection
