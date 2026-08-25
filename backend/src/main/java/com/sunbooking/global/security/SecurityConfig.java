@@ -94,12 +94,8 @@ public class SecurityConfig {
                                 // ALLOW SePay Webhook and Payment Status Polling
                                 .requestMatchers("/api/payments/webhook", "/api/payments/**")
                                 .permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/places", "/api/places/**",
-                                        "/api/food", "/api/food/**", "/api/news",
-                                        "/api/news/**", "/api/reviews/**")
-                                .permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/tours/**",
-                                        "/api/categories/**")
+                                .requestMatchers(HttpMethod.GET, "/api/reviews/**",
+                                        "/api/tours/**", "/api/categories/**")
                                 .permitAll()
                                 .anyRequest().authenticated())
                         .oauth2Login(oauth2 -> oauth2

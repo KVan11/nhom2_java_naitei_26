@@ -164,7 +164,21 @@ public class AdminUserServiceImpl implements AdminUserService {
             throw new IllegalArgumentException("You cannot delete your own admin account");
         }
 
-        userRepository.delete(user);
+        // Soft delete: Change status to DELETED
+        user.setStatus("DELETED");
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public UserResponse restoreUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        // Restore: Set status back to ACTIVE
+        user.setStatus("ACTIVE");
+        User restoredUser = userRepository.save(user);
+        return UserResponse.fromEntity(restoredUser);
     }
 
     @Override
@@ -174,6 +188,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         long activeUsers = userRepository.countByStatusIgnoreCase("ACTIVE");
         long inactiveUsers = userRepository.countByStatusIgnoreCase("INACTIVE");
         long lockedUsers = userRepository.countByStatusIgnoreCase("LOCKED");
+        long deletedUsers = userRepository.countByStatusIgnoreCase("DELETED");
         long newThisWeek = userRepository.countByCreatedAtAfter(LocalDateTime.now().minusDays(7));
         long adminUsers = userRepository.countByRoleIgnoreCase("ADMIN");
         long regularUsers = userRepository.countByRoleIgnoreCase("USER");
@@ -185,6 +200,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .activeUsers(activeUsers)
                 .inactiveUsers(inactiveUsers)
                 .lockedUsers(lockedUsers)
+                .deletedUsers(deletedUsers)
                 .newThisWeek(newThisWeek)
                 .adminUsers(adminUsers)
                 .regularUsers(regularUsers)

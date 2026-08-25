@@ -14,6 +14,7 @@ public class UserStatsResponse {
     private long activeUsers;
     private long inactiveUsers;
     private long lockedUsers;
+    private long deletedUsers;
     private long newThisWeek;
     private long adminUsers;
     private long regularUsers;

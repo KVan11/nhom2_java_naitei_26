@@ -14,9 +14,6 @@ export default function Navbar() {
   const navLinks = [
     { label: "Trang chủ", to: "/" },
     { label: "Danh sách Tour", to: "/tours" },
-    { label: "Điểm đến", to: "/places" },
-    { label: "Ẩm thực", to: "/food" },
-    { label: "Tin tức", to: "/news" },
   ];
 
   const isActive = (to: string) =>

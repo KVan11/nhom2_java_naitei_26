@@ -1,114 +1,100 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { AdminBookingResponse, BookingStatus } from "@/features/booking/types/admin-booking.types"
 
-interface RecentBooking {
-  id: string
-  name: string
-  email: string
-  tour: string
-  amount: string
-  status: "paid" | "confirmed" | "pending"
-  time: string
-  avatar?: string
-  fallback: string
+interface RecentSalesProps {
+  bookings?: AdminBookingResponse[]
+  loading?: boolean
 }
 
-const recentBookings: RecentBooking[] = [
-  {
-    id: "BK-8021",
-    name: "Nguyen Van An",
-    email: "nguyen.an@gmail.com",
-    tour: "Ba Na Hills 1-Day Fantasy Tour",
-    amount: "+1,850,000 ₫",
-    status: "paid",
-    time: "2m ago",
-    fallback: "NA",
-  },
-  {
-    id: "BK-8020",
-    name: "Tran Thi Mai",
-    email: "mai.tran@outlook.com",
-    tour: "Da Nang - Hoi An Heritage 3D2N",
-    amount: "+4,950,000 ₫",
-    status: "confirmed",
-    time: "15m ago",
-    fallback: "TM",
-  },
-  {
-    id: "BK-8019",
-    name: "Jackson Davis",
-    email: "jackson.d@traveler.org",
-    tour: "Ha Long Bay 5-Star Luxury Cruise",
-    amount: "+8,200,000 ₫",
-    status: "paid",
-    time: "42m ago",
-    fallback: "JD",
-  },
-  {
-    id: "BK-8018",
-    name: "Le Hoang Nam",
-    email: "nam.le92@yahoo.com",
-    tour: "Phu Quoc Sunset Snorkeling & Coral",
-    amount: "+3,450,000 ₫",
-    status: "pending",
-    time: "1h ago",
-    fallback: "LN",
-  },
-  {
-    id: "BK-8017",
-    name: "Pham Thu Huong",
-    email: "huong.pham@gmail.com",
-    tour: "Sapa Fansipan Peak Trekking 2D1N",
-    amount: "+2,790,000 ₫",
-    status: "confirmed",
-    time: "3h ago",
-    fallback: "PH",
-  },
-]
-
-function getStatusBadge(status: RecentBooking["status"]) {
+function getStatusBadge(status: BookingStatus) {
   switch (status) {
-    case "paid":
-      return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">Paid</Badge>
-    case "confirmed":
-      return <Badge className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100">Confirmed</Badge>
-    case "pending":
-      return <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100">Pending</Badge>
+    case "CONFIRMED":
+      return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200">Confirmed</Badge>
+    case "PENDING_PAYMENT":
+      return <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200">Pending</Badge>
+    case "CANCELLED":
+      return <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200">Cancelled</Badge>
+    case "EXPIRED":
+      return <Badge variant="outline" className="bg-slate-100 text-slate-600">Expired</Badge>
+    default:
+      return <Badge variant="outline">{status}</Badge>
   }
 }
 
-export function RecentSales() {
-  return (
-    <div className="space-y-6">
-      {recentBookings.map((booking) => (
-        <div key={booking.id} className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Avatar size="default" className="size-9 border border-border">
-              {booking.avatar && <AvatarImage src={booking.avatar} alt={booking.name} />}
-              <AvatarFallback className="font-semibold text-xs bg-slate-100 text-slate-700">
-                {booking.fallback}
-              </AvatarFallback>
-            </Avatar>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium leading-none text-foreground">{booking.name}</p>
-                {getStatusBadge(booking.status)}
+export function RecentSales({ bookings = [], loading = false }: RecentSalesProps) {
+  if (loading) {
+    return (
+      <div className="space-y-4 py-4">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex items-center justify-between gap-4 animate-pulse">
+            <div className="flex items-center gap-3">
+              <div className="size-9 rounded-full bg-slate-200" />
+              <div className="space-y-1.5">
+                <div className="h-3.5 w-32 rounded bg-slate-200" />
+                <div className="h-3 w-24 rounded bg-slate-200" />
               </div>
-              <p className="text-xs text-muted-foreground line-clamp-1 max-w-[220px]">
-                {booking.tour}
-              </p>
-              <p className="text-[11px] text-muted-foreground/70">
-                {booking.email} • {booking.time}
-              </p>
+            </div>
+            <div className="h-4 w-16 rounded bg-slate-200" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (bookings.length === 0) {
+    return (
+      <div className="py-8 text-center text-xs text-muted-foreground">
+        No recent bookings recorded yet.
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {bookings.slice(0, 5).map((booking) => {
+        const name = booking.contactName || booking.userName || "Customer"
+        const email = booking.contactEmail || booking.userEmail || "No email"
+        const initials = name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .substring(0, 2)
+          .toUpperCase()
+
+        return (
+          <div key={booking.id} className="flex items-center justify-between gap-4 py-1">
+            <div className="flex items-center gap-3 min-w-0">
+              <Avatar className="size-9 border border-border shrink-0">
+                <AvatarFallback className="font-semibold text-xs bg-slate-100 text-slate-700">
+                  {initials || "BK"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-0.5 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-xs font-semibold leading-none text-foreground truncate max-w-[140px] sm:max-w-[180px]">
+                    {name}
+                  </p>
+                  {getStatusBadge(booking.status)}
+                </div>
+                <p className="text-xs text-muted-foreground truncate max-w-[200px] sm:max-w-[240px]">
+                  {booking.tourName}
+                </p>
+                <p className="text-[11px] text-muted-foreground/70 font-mono">
+                  #{booking.id} • {booking.bookingDate ? new Date(booking.bookingDate).toLocaleDateString("vi-VN") : "Recent"}
+                </p>
+              </div>
+            </div>
+            <div className="text-right shrink-0">
+              <span className="font-mono text-xs font-bold text-foreground">
+                {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
+                  booking.totalPrice || 0
+                )}
+              </span>
             </div>
           </div>
-          <div className="text-right">
-            <span className="font-mono text-sm font-semibold text-foreground">
-              {booking.amount}
-            </span>
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

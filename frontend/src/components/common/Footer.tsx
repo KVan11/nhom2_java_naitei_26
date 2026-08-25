@@ -32,9 +32,6 @@ export default function Footer() {
             <div className="flex flex-col gap-2.5">
               {[
                 { label: "Tất cả Tour", to: "/tours" },
-                { label: "Điểm đến", to: "/places" },
-                { label: "Ẩm thực địa phương", to: "/food" },
-                { label: "Tin tức du lịch", to: "/news" },
               ].map((link) => (
                 <Link key={link.to} to={link.to} className="text-slate-500 text-sm hover:text-brand transition-colors">
                   {link.label}

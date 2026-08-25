@@ -5,7 +5,6 @@ import {
   CheckCircle2Icon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CopyIcon,
   DownloadIcon,
   EyeIcon,
   FilterIcon,
@@ -15,6 +14,7 @@ import {
   PhoneIcon,
   PlusCircleIcon,
   RefreshCwIcon,
+  RotateCcwIcon,
   SearchIcon,
   ShieldAlertIcon,
   ShieldCheckIcon,
@@ -130,6 +130,7 @@ export default function AdminManageUsersPage() {
     activeUsers: 3,
     inactiveUsers: 0,
     lockedUsers: 1,
+    deletedUsers: 0,
     newThisWeek: 2,
     adminUsers: 1,
     regularUsers: 3,
@@ -277,17 +278,30 @@ export default function AdminManageUsersPage() {
   }
 
   const handleDeleteUser = async (user: UserItem) => {
-    if (!confirm(`Are you sure you want to permanently delete user '${user.username}'?`)) {
+    if (!confirm(`Are you sure you want to delete user '${user.username}'? The account will be marked as deleted (Soft Delete).`)) {
       return
     }
     try {
       await adminUserService.deleteUser(user.userId)
-      toast.success(`User '${user.username}' deleted successfully`)
+      toast.success(`User '${user.username}' soft deleted successfully`)
       loadData()
     } catch (err: unknown) {
       const errorMsg =
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
         "Failed to delete user"
+      toast.error(errorMsg)
+    }
+  }
+
+  const handleRestoreUser = async (user: UserItem) => {
+    try {
+      await adminUserService.restoreUser(user.userId)
+      toast.success(`User '${user.username}' restored to Active status!`)
+      loadData()
+    } catch (err: unknown) {
+      const errorMsg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to restore user"
       toast.error(errorMsg)
     }
   }
@@ -446,7 +460,7 @@ export default function AdminManageUsersPage() {
           </CardHeader>
           <CardContent className="space-y-1">
             <div className="text-2xl font-bold tracking-tight text-foreground">{stats.lockedUsers}</div>
-            <p className="text-xs text-rose-600 font-medium">Requires review or verification</p>
+            <p className="text-xs text-rose-600 font-medium">Suspended or security lock</p>
           </CardContent>
         </Card>
 
@@ -479,6 +493,7 @@ export default function AdminManageUsersPage() {
                 { id: "ACTIVE", label: "Active", count: stats.activeUsers },
                 { id: "LOCKED", label: "Locked", count: stats.lockedUsers },
                 { id: "INACTIVE", label: "Inactive", count: stats.inactiveUsers },
+                { id: "DELETED", label: "Deleted", count: stats.deletedUsers || 0 },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -614,13 +629,14 @@ export default function AdminManageUsersPage() {
                 users.map((u) => {
                   const roleStyle = roleColorMap[u.role?.toUpperCase()] || roleColorMap.USER
                   const isSelected = selectedIds.includes(u.userId)
+                  const isDeleted = u.status === "DELETED"
 
                   return (
                     <TableRow
                       key={u.userId}
                       className={`hover:bg-slate-50/80 transition-colors cursor-pointer group ${
                         isSelected ? "bg-primary/5" : ""
-                      }`}
+                      } ${isDeleted ? "opacity-60 bg-slate-50/50" : ""}`}
                     >
                       {/* Checkbox */}
                       <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
@@ -643,7 +659,7 @@ export default function AdminManageUsersPage() {
                             {u.fullName?.charAt(0) || u.username.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors leading-tight">
+                            <p className={`text-xs font-semibold text-foreground group-hover:text-primary transition-colors leading-tight ${isDeleted ? "line-through text-muted-foreground" : ""}`}>
                               {u.fullName}
                             </p>
                             <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-0.5">
@@ -693,6 +709,11 @@ export default function AdminManageUsersPage() {
                             <span className="size-1.5 rounded-full bg-rose-500" />
                             Locked
                           </span>
+                        ) : u.status === "DELETED" ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+                            <Trash2Icon className="size-3 text-red-500" />
+                            Deleted
+                          </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
                             <span className="size-1.5 rounded-full bg-slate-400" />
@@ -709,13 +730,23 @@ export default function AdminManageUsersPage() {
                       {/* Action Column */}
                       <TableCell className="text-center pr-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => openEdit(u)}
-                            className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                            title="Edit user details"
-                          >
-                            <UserCogIcon className="size-3.5" />
-                          </button>
+                          {isDeleted ? (
+                            <button
+                              onClick={() => handleRestoreUser(u)}
+                              className="size-7 rounded-md flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors"
+                              title="Restore deleted account"
+                            >
+                              <RotateCcwIcon className="size-3.5" />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => openEdit(u)}
+                              className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                              title="Edit user details"
+                            >
+                              <UserCogIcon className="size-3.5" />
+                            </button>
+                          )}
                           <DropdownMenu>
                             <DropdownMenuTrigger className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
                               <MoreHorizontalIcon className="size-3.5" />
@@ -725,31 +756,44 @@ export default function AdminManageUsersPage() {
                                 <EyeIcon className="mr-2 size-3.5 text-muted-foreground" />
                                 View Profile
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="text-xs cursor-pointer" onClick={() => openEdit(u)}>
-                                <UserCogIcon className="mr-2 size-3.5 text-muted-foreground" />
-                                Edit Account
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-xs cursor-pointer" onClick={() => handleToggleStatus(u)}>
-                                {u.status === "ACTIVE" ? (
-                                  <>
-                                    <LockIcon className="mr-2 size-3.5 text-amber-600" />
-                                    Lock Account
-                                  </>
-                                ) : (
-                                  <>
-                                    <UnlockIcon className="mr-2 size-3.5 text-emerald-600" />
-                                    Unlock Account
-                                  </>
-                                )}
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-xs cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
-                                onClick={() => handleDeleteUser(u)}
-                              >
-                                <Trash2Icon className="mr-2 size-3.5" />
-                                Delete Account
-                              </DropdownMenuItem>
+                              {!isDeleted && (
+                                <>
+                                  <DropdownMenuItem className="text-xs cursor-pointer" onClick={() => openEdit(u)}>
+                                    <UserCogIcon className="mr-2 size-3.5 text-muted-foreground" />
+                                    Edit Account
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="text-xs cursor-pointer" onClick={() => handleToggleStatus(u)}>
+                                    {u.status === "ACTIVE" ? (
+                                      <>
+                                        <LockIcon className="mr-2 size-3.5 text-amber-600" />
+                                        Lock Account
+                                      </>
+                                    ) : (
+                                      <>
+                                        <UnlockIcon className="mr-2 size-3.5 text-emerald-600" />
+                                        Unlock Account
+                                      </>
+                                    )}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    className="text-xs cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                                    onClick={() => handleDeleteUser(u)}
+                                  >
+                                    <Trash2Icon className="mr-2 size-3.5" />
+                                    Delete Account
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                              {isDeleted && (
+                                <DropdownMenuItem
+                                  className="text-xs cursor-pointer text-emerald-600 focus:bg-emerald-50 focus:text-emerald-700 font-medium"
+                                  onClick={() => handleRestoreUser(u)}
+                                >
+                                  <RotateCcwIcon className="mr-2 size-3.5" />
+                                  Restore Account
+                                </DropdownMenuItem>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
@@ -845,6 +889,8 @@ export default function AdminManageUsersPage() {
                   <span className="text-muted-foreground">Account Status</span>
                   {selectedUser.status === "ACTIVE" ? (
                     <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200">Active</Badge>
+                  ) : selectedUser.status === "DELETED" ? (
+                    <Badge variant="destructive" className="bg-red-50 text-red-700 border-red-200">Deleted</Badge>
                   ) : (
                     <Badge variant="destructive">Locked</Badge>
                   )}
@@ -858,30 +904,47 @@ export default function AdminManageUsersPage() {
               </div>
 
               <DialogFooter className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setDetailDialogOpen(false)
-                    openEdit(selectedUser)
-                  }}
-                  className="text-xs flex-1"
-                >
-                  <UserCogIcon className="size-3.5 mr-1.5" />
-                  Edit Profile
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => {
-                    handleToggleStatus(selectedUser)
-                    setDetailDialogOpen(false)
-                  }}
-                  className="text-xs flex-1"
-                >
-                  {selectedUser.status === "ACTIVE" ? "Lock Account" : "Unlock Account"}
-                </Button>
+                {selectedUser.status === "DELETED" ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      handleRestoreUser(selectedUser)
+                      setDetailDialogOpen(false)
+                    }}
+                    className="text-xs flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
+                  >
+                    <RotateCcwIcon className="size-3.5 mr-1.5" />
+                    Restore Account
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setDetailDialogOpen(false)
+                        openEdit(selectedUser)
+                      }}
+                      className="text-xs flex-1"
+                    >
+                      <UserCogIcon className="size-3.5 mr-1.5" />
+                      Edit Profile
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => {
+                        handleToggleStatus(selectedUser)
+                        setDetailDialogOpen(false)
+                      }}
+                      className="text-xs flex-1"
+                    >
+                      {selectedUser.status === "ACTIVE" ? "Lock Account" : "Unlock Account"}
+                    </Button>
+                  </>
+                )}
               </DialogFooter>
             </div>
           )}

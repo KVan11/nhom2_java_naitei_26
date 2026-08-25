@@ -18,6 +18,7 @@ export interface UserStats {
   activeUsers: number;
   inactiveUsers: number;
   lockedUsers: number;
+  deletedUsers?: number;
   newThisWeek: number;
   adminUsers: number;
   regularUsers: number;
@@ -99,5 +100,10 @@ export const adminUserService = {
 
   deleteUser: async (id: number): Promise<void> => {
     await apiClient.delete(`/api/admin/users/${id}`);
+  },
+
+  restoreUser: async (id: number): Promise<UserItem> => {
+    const response = await apiClient.patch<UserItem>(`/api/admin/users/${id}/restore`);
+    return response.data;
   },
 };

@@ -23,10 +23,6 @@ This document tracks the Frontend specific tasks for the Sun Booking Tours proje
 
 ## NORMAL Priority
 
-- [ ] **FE-05** [FE] Implement Place Management
-  - *Description*: Xây dựng giao diện và chức năng quản lý Place cho User/Admin.
-- [ ] **FE-06** [FE] Implement Food Management
-  - *Description*: Xây dựng giao diện và chức năng quản lý Food cho User/Admin.
 - [ ] **FE-07** [FE] Implement User Management
   - *Description*: Xây dựng Profile và chức năng quản lý User dành cho Admin.
 

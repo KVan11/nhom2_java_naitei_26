@@ -13,10 +13,6 @@ import AdminManageReviewsPage from "@/pages/admin/reviews/AdminManageReviewsPage
 import AdminRevenuePage from "@/pages/admin/revenue/AdminRevenuePage";
 import TourList from "@/features/tour/pages/TourList";
 import TourDetail from "@/features/tour/pages/TourDetail";
-import PlaceList from "@/features/place/pages/PlaceList";
-import PlaceDetail from "@/features/place/pages/PlaceDetail";
-import FoodListPage from "@/features/food/pages/FoodListPage";
-import NewsListPage from "@/features/news/pages/NewsListPage";
 import BookingHistoryPage from "@/features/booking/pages/BookingHistoryPage";
 import ProfilePage from "@/features/user/pages/ProfilePage";
 import { RouteMiddleware } from "@/app/middleware/RouteMiddleware";
@@ -40,22 +36,6 @@ export const router = createBrowserRouter([
       {
         path: "tours/:id",
         element: <TourDetail />,
-      },
-      {
-        path: "places",
-        element: <PlaceList />,
-      },
-      {
-        path: "places/:id",
-        element: <PlaceDetail />,
-      },
-      {
-        path: "food",
-        element: <FoodListPage />,
-      },
-      {
-        path: "news",
-        element: <NewsListPage />,
       },
       {
         path: "checkout/:bookingId",

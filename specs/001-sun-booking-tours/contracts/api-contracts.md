@@ -20,40 +20,19 @@
 - `POST /api/tours`: Create tour (Admin).
 - `PUT /api/tours/{id}`: Update tour (Admin).
 
-## 4. Places, Food, and News (`/api/content`)
-
-- `GET /api/places`: Publicly list places.
-- `GET /api/places/{id}`: Publicly view one place.
-- `GET /api/food`: Publicly list food information.
-- `GET /api/food/{id}`: Publicly view one food item.
-- `GET /api/news`: Publicly list news content.
-- `GET /api/news/{id}`: Publicly view one news item.
-- `GET /api/admin/content/places`: Admin list places.
-- `POST /api/admin/content/places`: Admin create a place.
-- `PUT /api/admin/content/places/{id}`: Admin update a place.
-- `DELETE /api/admin/content/places/{id}`: Admin soft-delete a place.
-- `GET /api/admin/content/food`: Admin list food information.
-- `POST /api/admin/content/food`: Admin create a food item.
-- `PUT /api/admin/content/food/{id}`: Admin update a food item.
-- `DELETE /api/admin/content/food/{id}`: Admin soft-delete a food item.
-- `GET /api/admin/content/news`: Admin list news content.
-- `POST /api/admin/content/news`: Admin create a news item.
-- `PUT /api/admin/content/news/{id}`: Admin update a news item.
-- `DELETE /api/admin/content/news/{id}`: Admin soft-delete a news item.
-
-## 5. Bookings (`/api/bookings`)
+## 4. Bookings (`/api/bookings`)
 
 - `POST /api/bookings`: Create booking (User).
 - `GET /api/bookings`: List bookings (Admin) or User's own bookings.
 - `PUT /api/bookings/{id}/cancel`: Cancel booking (User, Admin).
 
-## 6. Payments (`/api/payments`)
+## 5. Payments (`/api/payments`)
 
 - `POST /api/payments`: Initiate a SePay VietQR payment checkout for a Booking (reserves capacity for 15 mins and returns QR info).
 - `GET /api/payments/{bookingId}`: Retrieve current Payment status.
 - `POST /api/payments/webhook`: Receive and verify SePay webhook payload to confirm payment.
 
-## 7. Reviews, Comments, Likes (`/api/reviews`)
+## 6. Reviews, Comments, Likes (`/api/reviews`)
 
 - `GET /api/reviews`: List tour reviews.
 - `POST /api/reviews`: Create new review for a booking.
@@ -61,6 +40,6 @@
 - `POST /api/reviews/comments/{id}/reply`: Reply to a comment.
 - `POST /api/reviews/{id}/like`: Like a review.
 
-## 8. Revenue (`/api/admin/revenue`)
+## 7. Revenue (`/api/admin/revenue`)
 
 - `GET /api/admin/revenue`: View revenue metrics (Admin).

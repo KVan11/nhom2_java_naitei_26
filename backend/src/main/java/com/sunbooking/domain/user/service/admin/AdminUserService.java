@@ -23,5 +23,7 @@ public interface AdminUserService {
 
     void deleteUser(Long id, Long currentAdminId);
 
+    UserResponse restoreUser(Long id);
+
     UserStatsResponse getUserStats();
 }

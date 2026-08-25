@@ -20,7 +20,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-const adminNavItems = [
+type AdminNavItem = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  end?: boolean;
+  badge?: string;
+};
+
+const adminNavItems: AdminNavItem[] = [
   {
     to: "/admin",
     label: "Overview",
@@ -46,7 +54,6 @@ const adminNavItems = [
     to: "/admin/reviews",
     label: "User Reviews",
     icon: MessageSquareQuoteIcon,
-    badge: "12",
   },
   {
     to: "/admin/revenue",

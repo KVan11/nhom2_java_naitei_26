@@ -23,7 +23,7 @@ Complete greenfield implementation of the SUN Booking Tours full-stack web appli
 
 **Constraints**: Role-based access control must be strictly enforced. Passwords must be hashed. No external functionality to be invented. No database schema modifications are required by the currently approved specification. `database/schema.sql` is the approved baseline schema.
 
-**Scale/Scope**: Greenfield implementation of User, Social Account, Category, Tour, Tour Image, Tour Departure, Place, Tour Place, Food, Booking, Booking Traveler, Payment (SePay VietQR), Review, Review Image, Review Like, Comment, News, Authentication, Authorization, Revenue reporting, Admin operations across both Frontend (UI) and Backend (API). Bank Account management is excluded.
+**Scale/Scope**: Greenfield implementation of User, Social Account, Category, Tour, Tour Image, Tour Departure, Booking, Booking Traveler, Payment (SePay VietQR), Review, Review Image, Review Like, Comment, Authentication, Authorization, Revenue reporting, Admin operations across both Frontend (UI) and Backend (API). Bank Account, Place, Tour Place, Food, and News management are excluded.
 
 ## Constitution Check
 

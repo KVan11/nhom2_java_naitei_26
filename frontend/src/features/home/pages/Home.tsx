@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import HeroSection from "../components/HeroSection";
 import FeaturedTours from "../components/FeaturedTours";
-import PopularPlaces from "../components/PopularPlaces";
 import CtaBanner from "../components/CtaBanner";
 import { homeService } from "../services/home.service";
 import type { HomeData } from "../services/home.service";
@@ -23,7 +22,6 @@ export default function Home() {
     <div className="min-h-screen bg-slate-50">
       <HeroSection categories={data.categories} departuresList={data.departuresList} />
       <FeaturedTours tours={data.featuredTours} />
-      <PopularPlaces places={data.popularPlaces} />
       <CtaBanner />
     </div>
   );

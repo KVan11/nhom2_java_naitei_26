@@ -83,6 +83,11 @@ public class AdminUserController {
         return ResponseEntity.ok(adminUserService.updateRole(id, request.getRole()));
     }
 
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<UserResponse> restore(@PathVariable Long id) {
+        return ResponseEntity.ok(adminUserService.restoreUser(id));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id, Authentication authentication) {

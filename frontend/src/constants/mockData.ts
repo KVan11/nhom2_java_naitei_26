@@ -32,30 +32,11 @@ export interface TourDeparture {
   status: DepartureStatus;
 }
 
-export interface Place {
-  id: number;
-  name: string;
-  city: string;
-  address: string;
-  description: string;
-  image: string;
-  active: boolean;
-}
-
 export interface Category {
   id: number;
   name: string;
   description: string;
   active: boolean;
-}
-
-export interface Food {
-  id: number;
-  placeId: number;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
 }
 
 export interface Review {
@@ -90,26 +71,6 @@ export const DESTINATIONS_LIST = [
 ];
 
 export const DEPARTURES_LIST = ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng", "Huế", "Nha Trang"];
-
-export const MOCK_PLACES: Place[] = [
-  { id: 1, name: "Vịnh Hạ Long", city: "Quảng Ninh", address: "Vịnh Hạ Long, Quảng Ninh", description: "Một di sản thế giới được UNESCO công nhận với hàng ngàn núi đá vôi và hòn đảo nhỏ tuyệt đẹp vươn lên từ làn nước màu ngọc bích. Một trong những kỳ quan thiên nhiên mang tính biểu tượng nhất của Việt Nam.", image: "https://images.unsplash.com/photo-1643029891412-92f9a81a8c16?w=600&h=400&fit=crop&auto=format", active: true },
-  { id: 2, name: "Thung lũng Sapa", city: "Lào Cai", address: "Sa Pa, Lào Cai", description: "Thị trấn vùng cao chìm trong sương mù, nổi tiếng với những thửa ruộng bậc thang và cộng đồng các dân tộc thiểu số đa dạng như người H'Mông và người Dao.", image: "https://images.unsplash.com/photo-1609412058473-c199497c3c5d?w=600&h=400&fit=crop&auto=format", active: true },
-  { id: 3, name: "Phố cổ Hội An", city: "Quảng Nam", address: "Phố Cổ Hội An, Quảng Nam", description: "Thương cảng lịch sử được bảo tồn tuyệt đẹp từ thế kỷ 15-19. Nổi tiếng với đèn lồng, nghề may mặc và sự giao thoa văn hóa địa phương và quốc tế.", image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&h=400&fit=crop&auto=format", active: true },
-  { id: 4, name: "Danh thắng Tràng An", city: "Ninh Bình", address: "Tràng An, Ninh Bình", description: "Quần thể di sản UNESCO với núi đá vôi, thung lũng xanh mướt và những ngôi đền cổ. Thường được ví như 'Vịnh Hạ Long trên cạn', di chuyển bằng thuyền nan truyền thống.", image: "https://images.unsplash.com/photo-1531737212413-667205e1cda7?w=600&h=400&fit=crop&auto=format", active: true },
-  { id: 5, name: "Bà Nà Hills", city: "Đà Nẵng", address: "Bà Nà Hills, Đà Nẵng", description: "Khu du lịch trên núi nổi tiếng với Cầu Vàng được nâng đỡ bởi đôi bàn tay đá khổng lồ, kiến trúc Pháp cổ và quang cảnh ngoạn mục.", image: "https://images.unsplash.com/photo-1643030595382-79273ae819d9?w=600&h=400&fit=crop&auto=format", active: true },
-  { id: 6, name: "Miền Tây Sông Nước", city: "Cần Thơ", address: "Đồng bằng sông Cửu Long", description: "Vựa lúa của Việt Nam — một mạng lưới chằng chịt các dòng sông, cù lao. Nổi tiếng với chợ nổi, miệt vườn và cuộc sống ven sông nhộn nhịp.", image: "https://images.unsplash.com/photo-1606801954050-be6b29588460?w=600&h=400&fit=crop&auto=format", active: true },
-];
-
-export const MOCK_FOODS: Food[] = [
-  { id: 1, placeId: 1, name: "Chả mực Hạ Long", description: "Chả mực giã tay thơm ngon, dai giòn sần sật, đặc sản trứ danh của biển Hạ Long.", price: 450000, imageUrl: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=600&h=400&fit=crop" },
-  { id: 2, placeId: 1, name: "Bún bề bề", description: "Tô bún nóng hổi với thịt bề bề ngọt lịm, nước dùng đậm đà hương vị biển.", price: 60000, imageUrl: "https://images.unsplash.com/photo-1594221708778-94f6d4eb8782?w=600&h=400&fit=crop" },
-  { id: 3, placeId: 2, name: "Thắng cố", description: "Món ăn truyền thống của người H'Mông, nấu từ nội tạng ngựa thơm mùi thảo mộc vùng cao.", price: 100000, imageUrl: "https://images.unsplash.com/photo-1548943487-a2e4e43b4859?w=600&h=400&fit=crop" },
-  { id: 4, placeId: 2, name: "Lợn cắp nách nướng", description: "Thịt lợn bản nướng xém da vàng ươm, thơm lừng gia vị mắc khén, hạt dổi.", price: 250000, imageUrl: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&h=400&fit=crop" },
-  { id: 5, placeId: 3, name: "Cao lầu", description: "Sợi mì vàng dai giòn, ăn kèm thịt xíu, tóp mỡ và rau thơm Trà Quế đặc trưng Hội An.", price: 35000, imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&h=400&fit=crop" },
-  { id: 6, placeId: 3, name: "Cơm gà Hội An", description: "Cơm gà xé bóp thấu với hành tây, rau răm, ăn kèm đu đủ chua và canh gà.", price: 50000, imageUrl: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&h=400&fit=crop" },
-  { id: 7, placeId: 4, name: "Dê núi Ninh Bình", description: "Thịt dê thả rông trên núi đá vôi, săn chắc và thơm ngon, làm thành nhiều món đặc sắc.", price: 200000, imageUrl: "https://images.unsplash.com/photo-1544025162-811114215449?w=600&h=400&fit=crop" },
-  { id: 8, placeId: 4, name: "Cơm cháy chà bông", description: "Đặc sản cơm cháy giòn rụm, vàng ươm chấm kèm nước sốt dê hoặc ăn cùng chà bông.", price: 80000, imageUrl: "https://images.unsplash.com/photo-1627308595229-783087095493?w=600&h=400&fit=crop" }
-];
 
 export const MOCK_TOURS: Tour[] = [
   {

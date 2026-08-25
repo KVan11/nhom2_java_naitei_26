@@ -44,9 +44,6 @@ export default function HeroSection({ categories, departuresList }: HeroSectionP
                 Khám phá Tour
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
-              <Link to="/places" className="bg-white/10 backdrop-blur-md text-white border border-white/25 rounded-xl px-7 py-3.5 text-[15px] font-semibold hover:bg-white/20 transition-colors">
-                Khám phá Điểm đến
-              </Link>
             </div>
 
             {/* Stats */}

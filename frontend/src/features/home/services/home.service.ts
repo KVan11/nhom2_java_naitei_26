@@ -1,10 +1,9 @@
 import { tourService } from "@/features/tour/services/tour.service";
 import { getCategories } from "@/services/categoryService";
-import { MOCK_PLACES, DEPARTURES_LIST, Tour, Place, Category } from "@/constants/mockData";
+import { DEPARTURES_LIST, Tour, Category } from "@/constants/mockData";
 
 export interface HomeData {
   featuredTours: Tour[];
-  popularPlaces: Place[];
   categories: Category[];
   departuresList: string[];
 }
@@ -24,7 +23,6 @@ export const homeService = {
 
       return {
         featuredTours: tours.slice(0, 6),
-        popularPlaces: MOCK_PLACES.slice(0, 4),
         categories,
         departuresList
       };
@@ -34,7 +32,6 @@ export const homeService = {
       const categories = await getCategories();
       return {
         featuredTours: tours.slice(0, 6),
-        popularPlaces: MOCK_PLACES.slice(0, 4),
         categories,
         departuresList: DEPARTURES_LIST
       };
