@@ -136,9 +136,51 @@ export default function AdminToursPage() {
     fetchTours();
   }, [fetchTours]);
 
+function formatDateInput(val: any): string {
+  if (!val) return new Date().toISOString().slice(0, 10);
+  if (Array.isArray(val)) {
+    const [y, m, d] = val;
+    const year = String(y).padStart(4, "0");
+    const month = String(m).padStart(2, "0");
+    const day = String(d).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  const str = String(val);
+  if (str.includes(",")) {
+    const parts = str.split(",");
+    if (parts.length >= 3) {
+      const year = parts[0].trim().padStart(4, "0");
+      const month = parts[1].trim().padStart(2, "0");
+      const day = parts[2].trim().padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+  }
+  return str.slice(0, 10);
+}
+
+function normalizeTourStatus(status?: string): "PUBLISHED" | "DRAFT" | "INACTIVE" | "ARCHIVED" {
+  const upper = String(status || "").toUpperCase();
+  if (upper === "PUBLISHED" || upper === "AVAILABLE") return "PUBLISHED";
+  if (upper === "DRAFT") return "DRAFT";
+  if (upper === "INACTIVE" || upper === "CLOSED") return "INACTIVE";
+  if (upper === "ARCHIVED") return "ARCHIVED";
+  return "PUBLISHED";
+}
+
+function normalizeDepartureStatus(status?: string): "UPCOMING" | "FULL" | "CANCELLED" | "COMPLETED" {
+  const upper = String(status || "").toUpperCase();
+  if (upper === "UPCOMING" || upper === "OPEN" || upper === "AVAILABLE") return "UPCOMING";
+  if (upper === "FULL") return "FULL";
+  if (upper === "CANCELLED") return "CANCELLED";
+  if (upper === "COMPLETED") return "COMPLETED";
+  return "UPCOMING";
+}
+
   const handleOpenCreateModal = () => {
     setEditingId(null);
     setActiveTab("general");
+    const today = new Date().toISOString().slice(0, 10);
+    const ninetyDaysLater = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
     setFormData({
       name: "",
       description: "",
@@ -147,8 +189,8 @@ export default function AdminToursPage() {
       destination: "",
       duration: "3 Days 2 Nights",
       status: "PUBLISHED",
-      startDate: new Date().toISOString().slice(0, 19),
-      endDate: new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 19),
+      startDate: today,
+      endDate: ninetyDaysLater,
       categoryId: categories[0]?.id || 1,
       images: [{ imageUrl: "https://images.unsplash.com/photo-1643029891412-92f9a81a8c16?w=800&h=500&fit=crop" }],
       departures: [
@@ -170,6 +212,8 @@ export default function AdminToursPage() {
     setActiveTab("general");
     try {
       const fullTour = await getAdminTourById(tour.id);
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const futureStr = new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString().slice(0, 10);
       setFormData({
         name: fullTour.name || "",
         description: fullTour.description || "",
@@ -177,9 +221,9 @@ export default function AdminToursPage() {
         departure: fullTour.departure || "",
         destination: fullTour.destination || "",
         duration: fullTour.duration || "",
-        status: (fullTour.status as any) || "PUBLISHED",
-        startDate: fullTour.startDate ? fullTour.startDate.slice(0, 19) : new Date().toISOString().slice(0, 19),
-        endDate: fullTour.endDate ? fullTour.endDate.slice(0, 19) : new Date().toISOString().slice(0, 19),
+        status: normalizeTourStatus(fullTour.status),
+        startDate: formatDateInput(fullTour.startDate),
+        endDate: formatDateInput(fullTour.endDate) || futureStr,
         categoryId: fullTour.category?.id || categories[0]?.id || 1,
         images: fullTour.images && fullTour.images.length > 0
           ? fullTour.images.map((img) => ({ imageUrl: img.imageUrl || img.url || "" }))
@@ -187,12 +231,12 @@ export default function AdminToursPage() {
         departures: fullTour.departures && fullTour.departures.length > 0
           ? fullTour.departures.map((d) => ({
               id: d.id,
-              departureDate: d.departureDate,
-              returnDate: d.returnDate || d.departureDate,
+              departureDate: formatDateInput(d.departureDate),
+              returnDate: formatDateInput(d.returnDate || d.departureDate),
               price: d.price || fullTour.basePrice,
               totalSlot: d.totalSlot ?? d.totalSlots ?? 20,
               availableSlot: d.availableSlot ?? d.availableSlots ?? 20,
-              status: (d.status as any) || "UPCOMING",
+              status: normalizeDepartureStatus(d.status),
             }))
           : [],
       });
@@ -214,19 +258,78 @@ export default function AdminToursPage() {
       return;
     }
 
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const startDateIso = formatDateInput(formData.startDate);
+    const endDateIso = formatDateInput(formData.endDate);
+
+    if (startDateIso < todayStr) {
+      toast.error("Start Date must be from today onwards!");
+      return;
+    }
+    if (endDateIso < startDateIso) {
+      toast.error("End Date must be on or after Start Date!");
+      return;
+    }
+    if (Number(formData.basePrice) < 0) {
+      toast.error("Base price cannot be negative!");
+      return;
+    }
+
+    for (let i = 0; i < formData.departures.length; i++) {
+      const dep = formData.departures[i];
+      const depDate = formatDateInput(dep.departureDate);
+      const retDate = formatDateInput(dep.returnDate || dep.departureDate);
+      const totalSlot = Number(dep.totalSlot);
+      const availableSlot = Number(dep.availableSlot);
+      const price = Number(dep.price);
+
+      if (depDate < todayStr) {
+        toast.error(`Departure #${i + 1}: Departure Date must be from today onwards!`);
+        return;
+      }
+      if (retDate < depDate) {
+        toast.error(`Departure #${i + 1}: Return Date must be on or after Departure Date!`);
+        return;
+      }
+      if (totalSlot <= 0) {
+        toast.error(`Departure #${i + 1}: Total Slots must be greater than 0!`);
+        return;
+      }
+      if (availableSlot < 0) {
+        toast.error(`Departure #${i + 1}: Available Slots cannot be negative!`);
+        return;
+      }
+      if (availableSlot > totalSlot) {
+        toast.error(`Departure #${i + 1}: Available Slots cannot exceed Total Slots!`);
+        return;
+      }
+      if (price < 0) {
+        toast.error(`Departure #${i + 1}: Price cannot be negative!`);
+        return;
+      }
+    }
+
     const payload: TourRequest = {
-      name: formData.name,
+      name: formData.name.trim(),
       description: formData.description,
-      basePrice: Number(formData.basePrice),
+      basePrice: Number(formData.basePrice) || 0,
       departure: formData.departure,
       destination: formData.destination,
       duration: formData.duration,
-      status: formData.status,
-      startDate: formData.startDate.includes("T") ? formData.startDate : `${formData.startDate}T00:00:00`,
-      endDate: formData.endDate.includes("T") ? formData.endDate : `${formData.endDate}T23:59:59`,
+      status: normalizeTourStatus(formData.status),
+      startDate: `${startDateIso}T00:00:00`,
+      endDate: `${endDateIso}T23:59:59`,
       categoryId: Number(formData.categoryId),
       images: formData.images.filter((img) => img.imageUrl.trim() !== ""),
-      departures: formData.departures,
+      departures: formData.departures.map((d) => ({
+        ...(d.id ? { id: Number(d.id) } : {}),
+        departureDate: formatDateInput(d.departureDate),
+        returnDate: formatDateInput(d.returnDate || d.departureDate),
+        price: Number(d.price) || 0,
+        totalSlot: Number(d.totalSlot) || 20,
+        availableSlot: Number(d.availableSlot) || 20,
+        status: normalizeDepartureStatus(d.status),
+      })),
     };
 
     setSubmitting(true);
@@ -706,6 +809,32 @@ export default function AdminToursPage() {
                       </select>
                     </div>
 
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
+                        Start Date <span className="text-destructive">*</span>
+                      </label>
+                      <Input
+                        type="date"
+                        min={new Date().toISOString().slice(0, 10)}
+                        value={formData.startDate.slice(0, 10)}
+                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                        className="text-xs h-9"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
+                        End Date <span className="text-destructive">*</span>
+                      </label>
+                      <Input
+                        type="date"
+                        min={formData.startDate ? formData.startDate.slice(0, 10) : new Date().toISOString().slice(0, 10)}
+                        value={formData.endDate.slice(0, 10)}
+                        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                        className="text-xs h-9"
+                      />
+                    </div>
+
                     <div className="sm:col-span-2 space-y-1.5">
                       <label className="text-xs font-semibold text-foreground uppercase tracking-wider">
                         Tour Description
@@ -793,6 +922,7 @@ export default function AdminToursPage() {
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Departure</label>
                           <Input
                             type="date"
+                            min={new Date().toISOString().slice(0, 10)}
                             value={dep.departureDate}
                             onChange={(e) => updateDepartureField(idx, "departureDate", e.target.value)}
                             className="text-xs h-8 bg-background"
@@ -802,6 +932,7 @@ export default function AdminToursPage() {
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Return Date</label>
                           <Input
                             type="date"
+                            min={dep.departureDate.slice(0, 10)}
                             value={dep.returnDate}
                             onChange={(e) => updateDepartureField(idx, "returnDate", e.target.value)}
                             className="text-xs h-8 bg-background"
@@ -811,6 +942,7 @@ export default function AdminToursPage() {
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Price (VND)</label>
                           <Input
                             type="number"
+                            min={0}
                             value={dep.price}
                             onChange={(e) => updateDepartureField(idx, "price", Number(e.target.value))}
                             className="text-xs h-8 bg-background font-mono font-bold text-primary"
@@ -820,6 +952,7 @@ export default function AdminToursPage() {
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Total Slots</label>
                           <Input
                             type="number"
+                            min={1}
                             value={dep.totalSlot}
                             onChange={(e) => updateDepartureField(idx, "totalSlot", Number(e.target.value))}
                             className="text-xs h-8 bg-background"
@@ -829,6 +962,8 @@ export default function AdminToursPage() {
                           <label className="text-[10px] font-semibold text-muted-foreground uppercase">Available</label>
                           <Input
                             type="number"
+                            min={0}
+                            max={dep.totalSlot}
                             value={dep.availableSlot}
                             onChange={(e) => updateDepartureField(idx, "availableSlot", Number(e.target.value))}
                             className="text-xs h-8 bg-background"

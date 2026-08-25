@@ -12,6 +12,16 @@ import java.util.List;
 
 public interface TourRepository extends JpaRepository<Tour, Long> {
 
+    boolean existsByCategoryId(Long categoryId);
+
+    @EntityGraph(attributePaths = {"category"})
+    @Query("select distinct t from Tour t "
+        + "where (lower(t.name) like lower(concat('%', :keyword, '%')) "
+        + "or lower(t.destination) like lower(concat('%', :keyword, '%'))) "
+        + "and (:categoryId is null or t.category.id = :categoryId) "
+        + "and t.status = com.sunbooking.domain.tour.entity.TourStatus.PUBLISHED")
+    List<Tour> searchPublished(@Param("keyword") String keyword, @Param("categoryId") Long categoryId);
+
     @EntityGraph(attributePaths = {"category"})
     @Query("select distinct t from Tour t "
         + "where (lower(t.name) like lower(concat('%', :keyword, '%')) "

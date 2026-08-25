@@ -41,7 +41,7 @@ public class TourService {
     @Transactional(readOnly = true)
     public List<TourResponse> search(String keyword, Long categoryId) {
         String normalizedKeyword = normalizeKeyword(keyword);
-        return tourRepository.search(normalizedKeyword, categoryId).stream()
+        return tourRepository.searchPublished(normalizedKeyword, categoryId).stream()
                 .map(TourResponse::from)
                 .toList();
     }
@@ -89,8 +89,14 @@ public class TourService {
     }
 
     private void apply(Tour tour, TourRequest request) {
+        if (request.startDate().toLocalDate().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Start Date must be from today onwards");
+        }
         if (request.startDate().isAfter(request.endDate())) {
-            throw new IllegalArgumentException("startDate must not be after endDate");
+            throw new IllegalArgumentException("Start Date must not be after End Date");
+        }
+        if (request.basePrice() != null && request.basePrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Base price must not be negative");
         }
 
         tour.setName(request.name().trim());
@@ -147,11 +153,23 @@ public class TourService {
 
     private void applyDeparture(Tour tour, Map<Long, TourDeparture> existingById,
                                 TourRequest.TourDepartureRequest request) {
+        if (request.departureDate().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Departure Date must be from today onwards");
+        }
         if (request.departureDate().isAfter(request.returnDate())) {
-            throw new IllegalArgumentException("departureDate must not be after returnDate");
+            throw new IllegalArgumentException("Departure Date must not be after Return Date");
+        }
+        if (request.totalSlot() == null || request.totalSlot() <= 0) {
+            throw new IllegalArgumentException("Total Slots must be greater than 0");
+        }
+        if (request.availableSlot() == null || request.availableSlot() < 0) {
+            throw new IllegalArgumentException("Available Slots must not be negative");
         }
         if (request.availableSlot() > request.totalSlot()) {
-            throw new IllegalArgumentException("availableSlot must not exceed totalSlot");
+            throw new IllegalArgumentException("Available Slots must not exceed Total Slots");
+        }
+        if (request.price() != null && request.price().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Departure price must not be negative");
         }
 
         TourDeparture departure = request.id() == null ? new TourDeparture() : existingById.get(request.id());

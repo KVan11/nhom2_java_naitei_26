@@ -91,7 +91,8 @@ public class GlobalExceptionHandler {
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("error", "Bad Request");
-        response.put("message", "Invalid request body");
+        String causeMsg = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
+        response.put("message", "Invalid request body: " + causeMsg);
 
         return ResponseEntity.badRequest().body(response);
     }

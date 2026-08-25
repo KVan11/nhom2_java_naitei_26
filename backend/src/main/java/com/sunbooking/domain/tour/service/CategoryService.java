@@ -5,6 +5,7 @@ import com.sunbooking.domain.tour.dto.CategoryResponse;
 import com.sunbooking.domain.tour.entity.Category;
 import com.sunbooking.global.exception.ResourceNotFoundException;
 import com.sunbooking.domain.tour.repository.CategoryRepository;
+import com.sunbooking.domain.tour.repository.TourRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,11 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final TourRepository tourRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, TourRepository tourRepository) {
         this.categoryRepository = categoryRepository;
+        this.tourRepository = tourRepository;
     }
 
     @Transactional(readOnly = true)
@@ -48,6 +51,9 @@ public class CategoryService {
     @Transactional
     public void delete(Long id) {
         Category category = findCategory(id);
+        if (tourRepository.existsByCategoryId(id)) {
+            throw new IllegalArgumentException("Cannot delete category as it is currently associated with active tours.");
+        }
         categoryRepository.delete(category);
     }
 
