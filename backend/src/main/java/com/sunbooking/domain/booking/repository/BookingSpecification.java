@@ -47,7 +47,7 @@ public class BookingSpecification {
                         Long id = Long.parseLong(keyword.substring(1));
                         predicates.add(criteriaBuilder.equal(root.get("id"), id));
                     } catch (NumberFormatException e) {
-                        predicates.add(criteriaBuilder.equal(root.get("id"), -1L)); 
+                        predicates.add(criteriaBuilder.equal(root.get("id"), -1L));
                     }
                 } else {
                     String pattern = "%" + keyword + "%";
@@ -74,9 +74,7 @@ public class BookingSpecification {
                     } catch (NumberFormatException e) {
                     }
 
-                    if (idPredicate != null && keyword.length() <= 4 && !keyword.startsWith("0")) {
-                        predicates.add(idPredicate);
-                    } else if (idPredicate != null) {
+                    if (idPredicate != null) {
                         predicates.add(criteriaBuilder.or(namePredicate, phonePredicate, emailPredicate,
                                 userEmailPredicate, userFullNamePredicate, userUsernamePredicate, idPredicate));
                     } else {
