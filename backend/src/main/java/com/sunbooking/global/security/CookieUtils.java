@@ -44,12 +44,21 @@ public class CookieUtils {
     }
 
     public static String serialize(Object object) {
-        return Base64.getUrlEncoder()
-                .encodeToString(SerializationUtils.serialize(object));
+        try (java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+             java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(bos)) {
+            oos.writeObject(object);
+            return Base64.getUrlEncoder().encodeToString(bos.toByteArray());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize object", e);
+        }
     }
 
     public static <T> T deserialize(Cookie cookie, Class<T> cls) {
-        return cls.cast(SerializationUtils.deserialize(
-                Base64.getUrlDecoder().decode(cookie.getValue())));
+        try (java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(Base64.getUrlDecoder().decode(cookie.getValue()));
+             java.io.ObjectInputStream ois = new java.io.ObjectInputStream(bis)) {
+            return cls.cast(ois.readObject());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to deserialize object", e);
+        }
     }
 }

@@ -69,9 +69,12 @@ export default function Navbar() {
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center gap-2 text-slate-700 hover:text-brand transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center font-bold text-sm text-white">
-                    {user.fullName?.charAt(0) ||
-                      user.username?.charAt(0).toUpperCase()}
+                  <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center font-bold text-sm text-white overflow-hidden">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.fullName || user.username} className="w-full h-full object-cover" />
+                    ) : (
+                      user.fullName?.charAt(0) || user.username?.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <span className="text-sm font-medium">
                     {user.fullName || user.username}
