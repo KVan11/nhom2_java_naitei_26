@@ -17,9 +17,9 @@ public interface AdminUserService {
 
     UserResponse updateUser(Long id, AdminUpdateUserRequest request);
 
-    UserResponse updateStatus(Long id, String status);
+    UserResponse updateStatus(Long id, com.sunbooking.domain.user.entity.UserStatus status);
 
-    UserResponse updateRole(Long id, String role);
+    UserResponse updateRole(Long id, com.sunbooking.domain.user.entity.Role role);
 
     void deleteUser(Long id, Long currentAdminId);
 

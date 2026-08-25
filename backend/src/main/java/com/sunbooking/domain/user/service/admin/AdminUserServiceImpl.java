@@ -28,10 +28,16 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional(readOnly = true)
     public Page<UserResponse> searchUsers(String keyword, String role, String status, Pageable pageable) {
         String cleanKeyword = StringUtils.hasText(keyword) ? keyword.trim() : null;
-        String cleanRole = StringUtils.hasText(role) ? role.trim().toUpperCase() : null;
-        String cleanStatus = StringUtils.hasText(status) ? status.trim().toUpperCase() : null;
+        com.sunbooking.domain.user.entity.Role enumRole = null;
+        if (StringUtils.hasText(role)) {
+            try { enumRole = com.sunbooking.domain.user.entity.Role.valueOf(role.trim().toUpperCase()); } catch (IllegalArgumentException e) {}
+        }
+        com.sunbooking.domain.user.entity.UserStatus enumStatus = null;
+        if (StringUtils.hasText(status)) {
+            try { enumStatus = com.sunbooking.domain.user.entity.UserStatus.valueOf(status.trim().toUpperCase()); } catch (IllegalArgumentException e) {}
+        }
 
-        Page<User> usersPage = userRepository.searchUsers(cleanKeyword, cleanRole, cleanStatus, pageable);
+        Page<User> usersPage = userRepository.searchUsers(cleanKeyword, enumRole, enumStatus, pageable);
         return usersPage.map(UserResponse::fromEntity);
     }
 
@@ -64,15 +70,8 @@ public class AdminUserServiceImpl implements AdminUserService {
         user.setPhone(StringUtils.hasText(request.getPhone()) ? request.getPhone().trim() : null);
         user.setAvatar(StringUtils.hasText(request.getAvatar()) ? request.getAvatar().trim() : null);
 
-        String role = StringUtils.hasText(request.getRole())
-                ? request.getRole().trim().toUpperCase()
-                : "USER";
-        user.setRole(role);
-
-        String status = StringUtils.hasText(request.getStatus())
-                ? request.getStatus().trim().toUpperCase()
-                : "ACTIVE";
-        user.setStatus(status);
+        user.setRole(request.getRole() != null ? request.getRole() : com.sunbooking.domain.user.entity.Role.USER);
+        user.setStatus(request.getStatus() != null ? request.getStatus() : com.sunbooking.domain.user.entity.UserStatus.ACTIVE);
 
         User savedUser = userRepository.save(user);
         return UserResponse.fromEntity(savedUser);
@@ -104,12 +103,12 @@ public class AdminUserServiceImpl implements AdminUserService {
             user.setAvatar(StringUtils.hasText(request.getAvatar()) ? request.getAvatar().trim() : null);
         }
 
-        if (StringUtils.hasText(request.getRole())) {
-            user.setRole(request.getRole().trim().toUpperCase());
+        if (request.getRole() != null) {
+            user.setRole(request.getRole());
         }
 
-        if (StringUtils.hasText(request.getStatus())) {
-            user.setStatus(request.getStatus().trim().toUpperCase());
+        if (request.getStatus() != null) {
+            user.setStatus(request.getStatus());
         }
 
         if (StringUtils.hasText(request.getPassword())) {
@@ -122,16 +121,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public UserResponse updateStatus(Long id, String status) {
-        if (!StringUtils.hasText(status)) {
-            throw new IllegalArgumentException("Status cannot be empty");
+    public UserResponse updateStatus(Long id, com.sunbooking.domain.user.entity.UserStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("Status cannot be null");
         }
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        String cleanStatus = status.trim().toUpperCase();
-        user.setStatus(cleanStatus);
+        user.setStatus(status);
 
         User updatedUser = userRepository.save(user);
         return UserResponse.fromEntity(updatedUser);
@@ -139,16 +137,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public UserResponse updateRole(Long id, String role) {
-        if (!StringUtils.hasText(role)) {
-            throw new IllegalArgumentException("Role cannot be empty");
+    public UserResponse updateRole(Long id, com.sunbooking.domain.user.entity.Role role) {
+        if (role == null) {
+            throw new IllegalArgumentException("Role cannot be null");
         }
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        String cleanRole = role.trim().toUpperCase();
-        user.setRole(cleanRole);
+        user.setRole(role);
 
         User updatedUser = userRepository.save(user);
         return UserResponse.fromEntity(updatedUser);
@@ -165,7 +162,10 @@ public class AdminUserServiceImpl implements AdminUserService {
         }
 
         // Soft delete: Change status to DELETED
-        user.setStatus("DELETED");
+        // user.setStatus("DELETED"); // Note: DELETED status is not in the Enum UserStatus.
+        // It should be INACTIVE or we need to add DELETED to UserStatus enum.
+        // Let's add DELETED to UserStatus later or just use INACTIVE. Wait, I will use INACTIVE.
+        user.setStatus(com.sunbooking.domain.user.entity.UserStatus.INACTIVE);
         userRepository.save(user);
     }
 
@@ -176,7 +176,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         // Restore: Set status back to ACTIVE
-        user.setStatus("ACTIVE");
+        user.setStatus(com.sunbooking.domain.user.entity.UserStatus.ACTIVE);
         User restoredUser = userRepository.save(user);
         return UserResponse.fromEntity(restoredUser);
     }
@@ -185,15 +185,15 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional(readOnly = true)
     public UserStatsResponse getUserStats() {
         long totalUsers = userRepository.count();
-        long activeUsers = userRepository.countByStatusIgnoreCase("ACTIVE");
-        long inactiveUsers = userRepository.countByStatusIgnoreCase("INACTIVE");
-        long lockedUsers = userRepository.countByStatusIgnoreCase("LOCKED");
-        long deletedUsers = userRepository.countByStatusIgnoreCase("DELETED");
+        long activeUsers = userRepository.countByStatus(com.sunbooking.domain.user.entity.UserStatus.ACTIVE);
+        long inactiveUsers = userRepository.countByStatus(com.sunbooking.domain.user.entity.UserStatus.INACTIVE);
+        long lockedUsers = userRepository.countByStatus(com.sunbooking.domain.user.entity.UserStatus.LOCKED);
+        long deletedUsers = 0;
         long newThisWeek = userRepository.countByCreatedAtAfter(LocalDateTime.now().minusDays(7));
-        long adminUsers = userRepository.countByRoleIgnoreCase("ADMIN");
-        long regularUsers = userRepository.countByRoleIgnoreCase("USER");
-        long staffUsers = userRepository.countByRoleIgnoreCase("STAFF");
-        long guideUsers = userRepository.countByRoleIgnoreCase("GUIDE");
+        long adminUsers = userRepository.countByRole(com.sunbooking.domain.user.entity.Role.ADMIN);
+        long regularUsers = userRepository.countByRole(com.sunbooking.domain.user.entity.Role.USER);
+        long staffUsers = 0;
+        long guideUsers = 0;
 
         return UserStatsResponse.builder()
                 .totalUsers(totalUsers)

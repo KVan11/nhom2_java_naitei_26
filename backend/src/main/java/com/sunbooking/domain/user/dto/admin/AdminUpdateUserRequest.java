@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.sunbooking.domain.user.entity.Role;
+import com.sunbooking.domain.user.entity.UserStatus;
 
 @Data
 @Builder
@@ -25,10 +27,10 @@ public class AdminUpdateUserRequest {
 
     private String avatar;
 
-    private String role; // USER, ADMIN, STAFF, GUIDE
+    private Role role; // USER, ADMIN, STAFF, GUIDE
 
-    private String status; // ACTIVE, INACTIVE, LOCKED
+    private UserStatus status; // ACTIVE, INACTIVE, LOCKED
 
-    @Size(min = 6, max = 100, message = "Password must be at least 6 characters if provided")
+    @Size(min = 8, max = 100, message = "Password must be at least 8 characters if provided")
     private String password; // Optional: set new password if not null/blank
 }

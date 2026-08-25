@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.sunbooking.domain.user.entity.Role;
+import com.sunbooking.domain.user.entity.UserStatus;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -19,7 +22,7 @@ public class AdminCreateUserRequest {
     private String username;
 
     @NotBlank(message = "Password cannot be blank")
-    @Size(min = 6, max = 100, message = "Password must be at least 6 characters")
+    @Size(min = 8, max = 100, message = "Password must be at least 8 characters")
     private String password;
 
     @NotBlank(message = "Full name cannot be blank")
@@ -36,7 +39,9 @@ public class AdminCreateUserRequest {
 
     private String avatar;
 
-    private String role; // USER, ADMIN, STAFF, GUIDE
+    @NotNull(message = "Role cannot be null")
+    private Role role; // USER, ADMIN, STAFF, GUIDE
 
-    private String status; // ACTIVE, INACTIVE, LOCKED
+    @NotNull(message = "Status cannot be null")
+    private UserStatus status; // ACTIVE, INACTIVE, LOCKED
 }
