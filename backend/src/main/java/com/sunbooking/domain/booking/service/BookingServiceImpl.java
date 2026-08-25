@@ -40,6 +40,13 @@ public class BookingServiceImpl implements BookingService {
 
         int numberOfPeople = request.getTravelers().size();
 
+        java.util.List<BookingStatus> activeStatuses = java.util.Arrays.asList(BookingStatus.PENDING_PAYMENT,
+                BookingStatus.CONFIRMED);
+        if (bookingRepository.existsByUserIdAndDepartureIdAndStatusIn(userId, request.getDepartureId(),
+                activeStatuses)) {
+            throw new IllegalArgumentException("You have already booked this tour. Please check your booking history.");
+        }
+
         java.time.LocalDate today = java.time.LocalDate.now();
         for (BookingTravelerDto tDto : request.getTravelers()) {
             if (tDto.getDateOfBirth() != null) {

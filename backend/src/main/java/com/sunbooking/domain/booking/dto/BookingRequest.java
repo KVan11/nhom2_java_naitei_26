@@ -25,6 +25,7 @@ public class BookingRequest {
     private String contactName;
 
     @NotBlank(message = "Contact phone is required")
+    @jakarta.validation.constraints.Pattern(regexp = "^(0|\\+84)[0-9]{9}$", message = "Phone number must be a valid VN phone number")
     private String contactPhone;
 
     @NotBlank(message = "Contact email is required")

@@ -25,6 +25,7 @@ public class BookingTravelerDto {
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
 
+    @jakarta.validation.constraints.Pattern(regexp = "^(0|\\+84)[0-9]{9}$", message = "Phone number must be a valid VN phone number")
     private String phone;
 
     @NotNull(message = "Traveler type is required (e.g. ADULT, CHILD)")
