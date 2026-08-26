@@ -3,8 +3,8 @@ package com.sunbooking.domain.payment.dto;
 import com.sunbooking.domain.payment.entity.PaymentStatus;
 import lombok.Builder;
 import lombok.Data;
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -15,6 +15,6 @@ public class PaymentResponse {
     private String transactionReference;
     private PaymentStatus status;
     private String qrCodeUrl; // Generated URL for FE to display QR code
-    private LocalDateTime createdAt;
-    private LocalDateTime expiredAt; // Reservation expiry time
+    private String createdAt;
+    private String expiredAt; // Reservation expiry time
 }

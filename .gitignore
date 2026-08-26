@@ -51,4 +51,6 @@ Thumbs.db
 
 application-secret.yml
 
-PaymentWebhookIntegrationTest.Java
+# Local Tests for M5 only
+backend/src/test/java/com/sunbooking/domain/payment/
+backend/src/test/resources/application.yml

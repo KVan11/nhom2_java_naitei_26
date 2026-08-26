@@ -4,15 +4,16 @@ import com.sunbooking.config.SePayConfig;
 import com.sunbooking.domain.booking.entity.Booking;
 import com.sunbooking.domain.payment.dto.PaymentResponse;
 import com.sunbooking.domain.payment.entity.Payment;
+import com.sunbooking.domain.payment.entity.PaymentStatus;
 import com.sunbooking.domain.payment.repository.PaymentRepository;
 import com.sunbooking.domain.tour.service.CapacityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.UUID;
-import com.sunbooking.domain.payment.entity.PaymentStatus;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -79,8 +80,8 @@ public class PaymentService {
                 .transactionReference(payment.getTransactionReference())
                 .status(payment.getStatus())
                 .qrCodeUrl(qrUrl)
-                .createdAt(payment.getCreatedAt())
-                .expiredAt(payment.getExpiredAt()) // From @Transient method in Entity
+                .createdAt(payment.getCreatedAt() != null ? payment.getCreatedAt().toString() : null)
+                .expiredAt(payment.getExpiredAt() != null ? payment.getExpiredAt().toString() : null)
                 .build();
     }
 }
