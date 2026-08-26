@@ -103,7 +103,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
                                                                 "/swagger-ui.html")
                                                 .permitAll()
-                                                .requestMatchers("/api/auth/login", "/api/auth/register", "/oauth2/**",
+                                                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/refresh", "/oauth2/**",
                                                                 "/login/oauth2/code/**")
                                                 .permitAll()
 

@@ -27,7 +27,7 @@ public class AdminUpdateUserRequest {
 
     private String avatar;
 
-    private Role role; // USER, ADMIN, STAFF, GUIDE
+    private Role role; // USER, ADMIN
 
     private UserStatus status; // ACTIVE, INACTIVE, LOCKED
 

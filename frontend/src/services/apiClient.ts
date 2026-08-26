@@ -27,17 +27,39 @@ apiClient.interceptors.request.use(
 // Add a response interceptor to handle global errors (e.g., 401 Unauthorized)
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      // Token is invalid or expired
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      
-      // Redirect to login page if we are not already there
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const res = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {}, { withCredentials: true });
+        
+        const newToken = res.data.token;
+        localStorage.setItem('token', newToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+        return Promise.reject(refreshError);
       }
     }
+    
+    if (error.response && error.response.status === 401 && originalRequest._retry) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+    }
+
     return Promise.reject(error);
   }
 );

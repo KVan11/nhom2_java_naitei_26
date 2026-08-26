@@ -12,5 +12,5 @@ import jakarta.validation.constraints.NotNull;
 public class AdminUserRoleUpdateRequest {
 
     @NotNull(message = "Role cannot be null")
-    private Role role; // USER, ADMIN, STAFF, GUIDE
+    private Role role; // USER, ADMIN
 }

@@ -38,11 +38,28 @@ public class AuthController {
         LoginResult loginResult = authService.login(loginRequest);
         String token = loginResult.token();
 
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", loginResult.refreshToken())
                 .httpOnly(true)
                 .secure(true) // Secure in production
-                .path("/")
-                .maxAge(15 * 60) // 15 minutes
+                .path("/api/auth/refresh")
+                .maxAge(7 * 24 * 60 * 60) // 7 days
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok(loginResult.userResponse());
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<UserResponse> refresh(@CookieValue(name = "refresh_token") String refreshToken, HttpServletResponse response) {
+        LoginResult loginResult = authService.refreshToken(refreshToken);
+
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", loginResult.refreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/api/auth/refresh")
+                .maxAge(7 * 24 * 60 * 60)
                 .sameSite("Strict")
                 .build();
 
@@ -52,11 +69,13 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+    public ResponseEntity<Map<String, String>> logout(@CookieValue(name = "refresh_token", required = false) String refreshToken, HttpServletResponse response) {
+        authService.logout(refreshToken);
+        
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
                 .secure(true)
-                .path("/")
+                .path("/api/auth/refresh")
                 .maxAge(0)
                 .sameSite("Strict")
                 .build();

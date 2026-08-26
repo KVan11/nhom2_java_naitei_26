@@ -23,15 +23,17 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final LoginAttemptService loginAttemptService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager, JwtUtils jwtUtils,
-            LoginAttemptService loginAttemptService) {
+            LoginAttemptService loginAttemptService, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.loginAttemptService = loginAttemptService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Transactional
@@ -106,6 +108,43 @@ public class AuthService {
 
         String token = jwtUtils.generateToken(userDetails);
         userResponse.setToken(token);
-        return new LoginResult(token, userResponse);
+        
+        com.sunbooking.domain.user.entity.RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+        
+        return new LoginResult(token, refreshToken.getToken(), userResponse);
+    }
+
+    @Transactional
+    public LoginResult refreshToken(String refreshTokenStr) {
+        return refreshTokenService.findByToken(refreshTokenStr)
+                .map(refreshTokenService::verifyExpiration)
+                .map(com.sunbooking.domain.user.entity.RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateToken(new CustomUserDetails(user));
+                    UserResponse userResponse = new UserResponse(
+                            user.getId(),
+                            user.getUsername(),
+                            user.getFullName(),
+                            user.getEmail(),
+                            user.getPhone(),
+                            user.getAvatar(),
+                            user.getRole(),
+                            user.getStatus());
+                    userResponse.setToken(token);
+                    
+                    // Create a new refresh token to replace the old one (Refresh Token Rotation)
+                    refreshTokenService.deleteByToken(refreshTokenStr);
+                    com.sunbooking.domain.user.entity.RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getId());
+                    
+                    return new LoginResult(token, newRefreshToken.getToken(), userResponse);
+                })
+                .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+    }
+    
+    @Transactional
+    public void logout(String refreshToken) {
+        if (refreshToken != null && !refreshToken.isEmpty()) {
+            refreshTokenService.deleteByToken(refreshToken);
+        }
     }
 }

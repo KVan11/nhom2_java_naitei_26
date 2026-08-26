@@ -26,14 +26,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private final JwtUtils jwtUtils;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final com.sunbooking.domain.user.service.RefreshTokenService refreshTokenService;
 
     @Value("${app.oauth2.authorized-redirect-uris}")
     private List<String> authorizedRedirectUris;
 
     public OAuth2AuthenticationSuccessHandler(JwtUtils jwtUtils,
-            HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
+            HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository,
+            com.sunbooking.domain.user.service.RefreshTokenService refreshTokenService) {
         this.jwtUtils = jwtUtils;
         this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -67,12 +70,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String token = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
 
-        // Set jwt token in cookie
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+        com.sunbooking.domain.user.entity.RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUser().getId());
+
+        // Set refresh token in cookie
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken.getToken())
                 .httpOnly(true)
                 .secure(true) // Secure in production
-                .path("/")
-                .maxAge(15 * 60) // 15 minutes
+                .path("/api/auth/refresh")
+                .maxAge(7 * 24 * 60 * 60) // 7 days
                 .sameSite("Strict")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
