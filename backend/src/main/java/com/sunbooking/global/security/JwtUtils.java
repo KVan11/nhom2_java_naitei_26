@@ -28,6 +28,7 @@ public class JwtUtils {
     }
 
     public String generateTokenFromUsername(String username) {
+        // Fallback for string username if needed, but we should use generateToken(CustomUserDetails)
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
@@ -35,6 +36,30 @@ public class JwtUtils {
                 .subject(username)
                 .issuedAt(now)
                 .expiration(expiryDate)
+                .id(java.util.UUID.randomUUID().toString())
+                .issuer("sunbooking")
+                .audience().add("sunbooking-client").and()
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String generateToken(com.sunbooking.global.security.CustomUserDetails userDetails) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+
+        String roles = userDetails.getAuthorities().stream()
+                .map(org.springframework.security.core.GrantedAuthority::getAuthority)
+                .reduce((a, b) -> a + "," + b)
+                .orElse("");
+
+        return Jwts.builder()
+                .subject(userDetails.getUsername())
+                .claim("roles", roles)
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .id(java.util.UUID.randomUUID().toString())
+                .issuer("sunbooking")
+                .audience().add("sunbooking-client").and()
                 .signWith(getSigningKey())
                 .compact();
     }

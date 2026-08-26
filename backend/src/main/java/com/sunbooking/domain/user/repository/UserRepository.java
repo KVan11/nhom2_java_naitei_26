@@ -32,17 +32,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
            "LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(u.phone) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-           "(:role IS NULL OR :role = '' OR UPPER(u.role) = UPPER(:role)) AND " +
-           "(:status IS NULL OR :status = '' OR UPPER(u.status) = UPPER(:status))")
+           "(:role IS NULL OR u.role = :role) AND " +
+           "(:status IS NULL OR u.status = :status)")
     Page<User> searchUsers(
             @Param("keyword") String keyword,
-            @Param("role") String role,
-            @Param("status") String status,
+            @Param("role") com.sunbooking.domain.user.entity.Role role,
+            @Param("status") com.sunbooking.domain.user.entity.UserStatus status,
             Pageable pageable);
 
-    long countByStatusIgnoreCase(String status);
+    long countByStatus(com.sunbooking.domain.user.entity.UserStatus status);
 
-    long countByRoleIgnoreCase(String role);
+    long countByRole(com.sunbooking.domain.user.entity.Role role);
 
     long countByCreatedAtAfter(LocalDateTime dateTime);
 }

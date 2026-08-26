@@ -16,8 +16,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
   const updateUser = useAuthStore((state) => state.updateUser);
   const [fullName, setFullName] = useState(user.fullName || "");
   const [phone, setPhone] = useState(user.phone || "");
-  const [avatar, setAvatar] = useState(user.avatar || "");
-  
+
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ fullName?: string; phone?: string }>({});
 
@@ -29,8 +29,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
       tempErrors.fullName = "Họ và tên tối đa 100 ký tự";
     }
 
-    if (phone.trim() && !/^[0-9+.\s-]{8,20}$/.test(phone)) {
-      tempErrors.phone = "Số điện thoại không hợp lệ (từ 8 đến 20 chữ số)";
+    if (!phone.trim()) {
+      tempErrors.phone = "Số điện thoại không được để trống";
+    } else if (!/^(0|\+84)[0-9]{9}$/.test(phone.trim())) {
+      tempErrors.phone = "Số điện thoại không hợp lệ (bắt đầu bằng 0 hoặc +84, theo sau là 9 số)";
     }
 
     setErrors(tempErrors);
@@ -45,8 +47,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     try {
       const updatedUser = await userService.updateProfile({
         fullName: fullName.trim(),
-        phone: phone.trim() || undefined,
-        avatar: avatar.trim() || undefined,
+        phone: phone.trim(),
       });
 
       // Update authStore

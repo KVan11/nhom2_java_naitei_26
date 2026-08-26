@@ -31,8 +31,8 @@ export function PasswordForm() {
 
     if (!newPassword) {
       tempErrors.newPassword = "Mật khẩu mới không được để trống";
-    } else if (newPassword.length < 6) {
-      tempErrors.newPassword = "Mật khẩu mới phải có ít nhất 6 ký tự";
+    } else if (newPassword.length < 8) {
+      tempErrors.newPassword = "Mật khẩu mới phải có ít nhất 8 ký tự";
     } else if (newPassword === currentPassword) {
       tempErrors.newPassword = "Mật khẩu mới không được trùng với mật khẩu cũ";
     }

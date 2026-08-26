@@ -5,6 +5,7 @@ import com.sunbooking.domain.user.dto.UserProfileUpdateRequest;
 import com.sunbooking.domain.user.dto.UserResponse;
 
 public interface UserService {
+    UserResponse getUserProfile(Long userId);
 
     UserResponse updateProfile(Long userId, UserProfileUpdateRequest request);
 
