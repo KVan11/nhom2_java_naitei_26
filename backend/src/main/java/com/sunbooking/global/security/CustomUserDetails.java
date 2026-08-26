@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.util.StringUtils;
 import com.sunbooking.domain.user.entity.User;
 
 public class CustomUserDetails implements UserDetails, OAuth2User {
@@ -31,16 +30,13 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = user.getRole();
+        com.sunbooking.domain.user.entity.Role role = user.getRole();
 
-        if (!StringUtils.hasText(role)) {
+        if (role == null) {
             return Collections.emptyList();
         }
 
-        String normalizedRole = role.trim().toUpperCase(java.util.Locale.ROOT);
-        String authority = normalizedRole.startsWith("ROLE_")
-            ? normalizedRole
-            : "ROLE_" + normalizedRole;
+        String authority = "ROLE_" + role.name();
 
         return Collections.singletonList(new SimpleGrantedAuthority(authority));
     }

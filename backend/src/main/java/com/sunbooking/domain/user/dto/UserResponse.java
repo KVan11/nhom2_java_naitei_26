@@ -1,6 +1,8 @@
 package com.sunbooking.domain.user.dto;
 
+import com.sunbooking.domain.user.entity.Role;
 import com.sunbooking.domain.user.entity.User;
+import com.sunbooking.domain.user.entity.UserStatus;
 import java.time.LocalDateTime;
 
 public class UserResponse {
@@ -10,16 +12,17 @@ public class UserResponse {
     private String email;
     private String phone;
     private String avatar;
-    private String role;
-    private String status;
+    private Role role;
+    private UserStatus status;
     private String token;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String provider;
 
     public UserResponse() {
     }
 
-    public UserResponse(Long userId, String username, String fullName, String email, String phone, String avatar, String role, String status) {
+    public UserResponse(Long userId, String username, String fullName, String email, String phone, String avatar, Role role, UserStatus status) {
         this.userId = userId;
         this.username = username;
         this.fullName = fullName;
@@ -30,7 +33,7 @@ public class UserResponse {
         this.status = status;
     }
 
-    public UserResponse(Long userId, String username, String fullName, String email, String phone, String avatar, String role, String status, String token) {
+    public UserResponse(Long userId, String username, String fullName, String email, String phone, String avatar, Role role, UserStatus status, String token) {
         this.userId = userId;
         this.username = username;
         this.fullName = fullName;
@@ -42,7 +45,7 @@ public class UserResponse {
         this.token = token;
     }
 
-    public UserResponse(Long userId, String username, String fullName, String email, String phone, String avatar, String role, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserResponse(Long userId, String username, String fullName, String email, String phone, String avatar, Role role, UserStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userId = userId;
         this.username = username;
         this.fullName = fullName;
@@ -130,19 +133,19 @@ public class UserResponse {
         this.avatar = avatar;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
-    public String getStatus() {
+    public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 
@@ -168,5 +171,13 @@ public class UserResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 }

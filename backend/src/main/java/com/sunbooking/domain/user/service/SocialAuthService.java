@@ -84,8 +84,8 @@ public class SocialAuthService {
             user.setFullName(oAuth2UserInfo.getName());
             user.setEmail(email);
             user.setAvatar(oAuth2UserInfo.getImageUrl());
-            user.setRole("USER");
-            user.setStatus("ACTIVE");
+            user.setRole(com.sunbooking.domain.user.entity.Role.USER);
+            user.setStatus(com.sunbooking.domain.user.entity.UserStatus.ACTIVE);
             user = userRepository.save(user);
         }
 

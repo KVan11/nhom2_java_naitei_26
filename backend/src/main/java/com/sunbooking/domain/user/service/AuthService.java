@@ -22,13 +22,16 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final LoginAttemptService loginAttemptService;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+            AuthenticationManager authenticationManager, JwtUtils jwtUtils,
+            LoginAttemptService loginAttemptService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.loginAttemptService = loginAttemptService;
     }
 
     @Transactional
@@ -47,8 +50,8 @@ public class AuthService {
         user.setFullName(registerRequest.getFullName());
         user.setEmail(registerRequest.getEmail());
         user.setPhone(registerRequest.getPhone());
-        user.setRole("USER");
-        user.setStatus("ACTIVE");
+        user.setRole(com.sunbooking.domain.user.entity.Role.USER);
+        user.setStatus(com.sunbooking.domain.user.entity.UserStatus.ACTIVE);
 
         User savedUser = userRepository.save(user);
 
@@ -65,8 +68,20 @@ public class AuthService {
 
     public LoginResult login(LoginRequest loginRequest) {
         String username = loginRequest.getUsername().toLowerCase();
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, loginRequest.getPassword()));
+
+        if (loginAttemptService.isBlocked(username)) {
+            throw new org.springframework.security.authentication.LockedException("Tài khoản đã bị khóa tạm thời 4 phút do nhập sai mật khẩu quá 3 lần.");
+        }
+
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, loginRequest.getPassword()));
+            loginAttemptService.loginSucceeded(username);
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            loginAttemptService.loginFailed(username);
+            throw new org.springframework.security.authentication.BadCredentialsException("Tài khoản hoặc mật khẩu không chính xác.");
+        }
 
         Object principal = authentication.getPrincipal();
         if (!(principal instanceof CustomUserDetails userDetails)) {
@@ -75,7 +90,7 @@ public class AuthService {
         }
 
         User user = userDetails.getUser();
-        if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+        if (com.sunbooking.domain.user.entity.UserStatus.ACTIVE != user.getStatus()) {
             throw new org.springframework.security.authentication.DisabledException("ACCOUNT_DISABLED");
         }
 

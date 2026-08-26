@@ -4,7 +4,6 @@ import { User } from "@/features/auth/schemas/auth";
 export interface UserProfileUpdateRequest {
   fullName?: string;
   phone?: string;
-  avatar?: string;
 }
 
 export interface ChangePasswordRequest {
