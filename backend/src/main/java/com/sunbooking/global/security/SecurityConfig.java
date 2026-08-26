@@ -90,19 +90,9 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
                         JwtAuthenticationFilter jwtAuthenticationFilter)
                         throws Exception {
-                org.springframework.security.web.csrf.CookieCsrfTokenRepository tokenRepository = org.springframework.security.web.csrf.CookieCsrfTokenRepository
-                                .withHttpOnlyFalse();
-                org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler delegate = new org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler();
-                delegate.setCsrfRequestAttributeName("_csrf");
-
                 http
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                                .csrf(csrf -> csrf
-                                                .ignoringRequestMatchers("/api/payments/**", "/api/auth/**")
-                                                .csrfTokenRepository(tokenRepository)
-                                                .csrfTokenRequestHandler(delegate))
-                                .addFilterAfter(new CsrfCookieFilter(),
-                                                org.springframework.security.web.authentication.www.BasicAuthenticationFilter.class)
+                                .csrf(csrf -> csrf.disable())
                                 .exceptionHandling(exception -> exception
                                                 .authenticationEntryPoint((request, response, authException) -> 
                                                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
@@ -148,8 +138,8 @@ public class SecurityConfig {
                 configuration.setAllowedOrigins(allowedOrigins);
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                 configuration.setAllowedHeaders(
-                                List.of("Authorization", "Content-Type", "Cache-Control", "X-XSRF-TOKEN"));
-                configuration.setExposedHeaders(List.of("Authorization", "X-XSRF-TOKEN"));
+                                List.of("Authorization", "Content-Type", "Cache-Control"));
+                configuration.setExposedHeaders(List.of("Authorization"));
                 configuration.setAllowCredentials(true);
                 configuration.setMaxAge(3600L);
 
