@@ -8,6 +8,7 @@ export interface User {
   role: string;
   status: string;
   token?: string;
+  provider?: string;
 }
 
 export interface LoginRequest {

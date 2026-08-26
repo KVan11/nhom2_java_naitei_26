@@ -1,6 +1,7 @@
 package com.sunbooking.domain.user.service;
 
 import com.sunbooking.domain.user.dto.LoginRequest;
+import com.sunbooking.domain.user.dto.LoginResult;
 import com.sunbooking.domain.user.dto.RegisterRequest;
 import com.sunbooking.domain.user.dto.UserResponse;
 import com.sunbooking.domain.user.entity.User;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -20,16 +22,22 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final LoginAttemptService loginAttemptService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager, JwtUtils jwtUtils,
+            LoginAttemptService loginAttemptService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.loginAttemptService = loginAttemptService;
     }
 
+    @Transactional
     public UserResponse register(RegisterRequest registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+        String username = registerRequest.getUsername().toLowerCase();
+        if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username is already taken");
         }
         if (registerRequest.getEmail() != null && userRepository.existsByEmail(registerRequest.getEmail())) {
@@ -37,13 +45,13 @@ public class AuthService {
         }
 
         User user = new User();
-        user.setUsername(registerRequest.getUsername());
+        user.setUsername(username);
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setFullName(registerRequest.getFullName());
         user.setEmail(registerRequest.getEmail());
         user.setPhone(registerRequest.getPhone());
-        user.setRole("USER");
-        user.setStatus("ACTIVE");
+        user.setRole(com.sunbooking.domain.user.entity.Role.USER);
+        user.setStatus(com.sunbooking.domain.user.entity.UserStatus.ACTIVE);
 
         User savedUser = userRepository.save(user);
 
@@ -55,19 +63,38 @@ public class AuthService {
                 savedUser.getPhone(),
                 savedUser.getAvatar(),
                 savedUser.getRole(),
-                savedUser.getStatus()
-        );
+                savedUser.getStatus());
     }
 
-    public String login(LoginRequest loginRequest, AuthenticationResponseBuilder responseBuilder) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-        );
+    public LoginResult login(LoginRequest loginRequest) {
+        String username = loginRequest.getUsername().toLowerCase();
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (loginAttemptService.isBlocked(username)) {
+            throw new org.springframework.security.authentication.LockedException("Tài khoản đã bị khóa tạm thời 4 phút do nhập sai mật khẩu quá 3 lần.");
+        }
+
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, loginRequest.getPassword()));
+            loginAttemptService.loginSucceeded(username);
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            loginAttemptService.loginFailed(username);
+            throw new org.springframework.security.authentication.BadCredentialsException("Tài khoản hoặc mật khẩu không chính xác.");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof CustomUserDetails userDetails)) {
+            throw new org.springframework.security.authentication.InternalAuthenticationServiceException(
+                    "Expected CustomUserDetails but got " + principal.getClass().getName());
+        }
+
         User user = userDetails.getUser();
+        if (com.sunbooking.domain.user.entity.UserStatus.ACTIVE != user.getStatus()) {
+            throw new org.springframework.security.authentication.DisabledException("ACCOUNT_DISABLED");
+        }
 
-        responseBuilder.setUserResponse(new UserResponse(
+        UserResponse userResponse = new UserResponse(
                 user.getId(),
                 user.getUsername(),
                 user.getFullName(),
@@ -75,21 +102,10 @@ public class AuthService {
                 user.getPhone(),
                 user.getAvatar(),
                 user.getRole(),
-                user.getStatus()
-        ));
+                user.getStatus());
 
-        return jwtUtils.generateTokenFromUsername(user.getUsername());
-    }
-
-    public static class AuthenticationResponseBuilder {
-        private UserResponse userResponse;
-
-        public UserResponse getUserResponse() {
-            return userResponse;
-        }
-
-        public void setUserResponse(UserResponse userResponse) {
-            this.userResponse = userResponse;
-        }
+        String token = jwtUtils.generateToken(userDetails);
+        userResponse.setToken(token);
+        return new LoginResult(token, userResponse);
     }
 }

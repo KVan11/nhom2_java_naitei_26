@@ -3,7 +3,6 @@ package com.sunbooking.domain.user.controller;
 import com.sunbooking.domain.user.dto.ChangePasswordRequest;
 import com.sunbooking.domain.user.dto.UserProfileUpdateRequest;
 import com.sunbooking.domain.user.dto.UserResponse;
-import com.sunbooking.domain.user.entity.User;
 import com.sunbooking.domain.user.service.UserService;
 import com.sunbooking.global.security.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -32,8 +31,8 @@ public class UserController {
             return ResponseEntity.status(401).build();
         }
 
-        User user = userDetails.getUser();
-        return ResponseEntity.ok(UserResponse.fromEntity(user));
+        Long userId = userDetails.getUser().getId();
+        return ResponseEntity.ok(userService.getUserProfile(userId));
     }
 
     @PutMapping("/me")

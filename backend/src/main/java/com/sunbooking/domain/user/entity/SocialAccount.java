@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "social_account")
+@Table(name = "social_account", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"provider", "provider_uid"})
+})
 public class SocialAccount {
 
     @Id
@@ -13,13 +15,13 @@ public class SocialAccount {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "provider")
+    @Column(name = "provider", nullable = false)
     private String provider;
 
-    @Column(name = "provider_uid")
+    @Column(name = "provider_uid", nullable = false)
     private String providerUid;
 
     @Column(name = "created_at")

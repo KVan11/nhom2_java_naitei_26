@@ -25,6 +25,8 @@ export default function ProfilePage() {
     user.username?.charAt(0)?.toUpperCase() ||
     "U";
 
+  const isSocialLogin = user.provider === "google" || user.provider === "facebook";
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 md:py-16">
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-brand/90 to-brand-dark p-6 md:p-8 text-white shadow-lg mb-8">
@@ -70,13 +72,15 @@ export default function ProfilePage() {
                 Thông tin cá nhân
               </TabsTrigger>
 
-              <TabsTrigger
-                value="security"
-                className="text-xs font-bold flex items-center justify-center gap-2 py-2.5 rounded-lg data-active:bg-white data-active:shadow-sm"
-              >
-                <KeyRound className="w-3.5 h-3.5" />
-                Đổi mật khẩu
-              </TabsTrigger>
+              {!isSocialLogin && (
+                <TabsTrigger
+                  value="security"
+                  className="text-xs font-bold flex items-center justify-center gap-2 py-2.5 rounded-lg data-active:bg-white data-active:shadow-sm"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  Đổi mật khẩu
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="info" className="outline-none focus:outline-none">
@@ -91,20 +95,22 @@ export default function ProfilePage() {
               <ProfileForm user={user} />
             </TabsContent>
 
-            <TabsContent
-              value="security"
-              className="outline-none focus:outline-none"
-            >
-              <div className="mb-6">
-                <h2 className="text-xl font-bold text-slate-800">
-                  Đổi mật khẩu
-                </h2>
-                <p className="text-slate-500 text-xs mt-1 font-medium">
-                  Hãy nhập mật khẩu hiện tại và mật khẩu mới để bảo vệ tài khoản.
-                </p>
-              </div>
-              <PasswordForm />
-            </TabsContent>
+            {!isSocialLogin && (
+              <TabsContent
+                value="security"
+                className="outline-none focus:outline-none"
+              >
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-slate-800">
+                    Đổi mật khẩu
+                  </h2>
+                  <p className="text-slate-500 text-xs mt-1 font-medium">
+                    Hãy nhập mật khẩu hiện tại và mật khẩu mới để bảo vệ tài khoản.
+                  </p>
+                </div>
+                <PasswordForm />
+              </TabsContent>
+            )}
           </Tabs>
         </CardContent>
       </Card>

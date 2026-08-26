@@ -1,15 +1,16 @@
 package com.sunbooking.domain.user.dto.admin;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.sunbooking.domain.user.entity.Role;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminUserRoleUpdateRequest {
 
-    @NotBlank(message = "Role cannot be blank")
-    private String role; // USER, ADMIN, STAFF, GUIDE
+    @NotNull(message = "Role cannot be null")
+    private Role role; // USER, ADMIN, STAFF, GUIDE
 }

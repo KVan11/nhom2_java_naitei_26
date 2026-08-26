@@ -18,12 +18,12 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       {/* Email */}
       <div className="space-y-2">
-        <Label className="text-slate-700 font-semibold text-[13px] tracking-wide uppercase">Email / Tên đăng nhập <span className="text-red-500">*</span></Label>
+        <Label className="text-slate-700 font-semibold text-[13px] tracking-wide uppercase">Tên đăng nhập <span className="text-red-500">*</span></Label>
         <Input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="email@vidu.com"
+          placeholder="Tên đăng nhập"
           className={`py-5 rounded-xl text-base ${errors.username ? "border-red-400 focus-visible:ring-red-400" : ""}`}
         />
         {errors.username && <div className="text-xs text-red-500 mt-1">{errors.username}</div>}
