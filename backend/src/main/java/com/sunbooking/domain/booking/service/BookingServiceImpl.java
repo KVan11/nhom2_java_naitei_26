@@ -121,13 +121,6 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("Only pending bookings can be cancelled");
         }
 
-        if (booking.getDeparture().getDepartureDate() != null) {
-            java.time.LocalDateTime departureTime = booking.getDeparture().getDepartureDate().atStartOfDay();
-            if (departureTime.minusHours(24).isBefore(LocalDateTime.now())) {
-                throw new IllegalArgumentException("Cannot cancel booking within 24 hours of departure");
-            }
-        }
-
         TourDeparture departure = booking.getDeparture();
         departure.setAvailableSlot(departure.getAvailableSlot() + booking.getNumberOfPeople());
         tourDepartureRepository.save(departure);
