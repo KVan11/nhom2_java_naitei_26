@@ -23,5 +23,13 @@ export function RouteMiddleware({ children, type }: RouteMiddlewareProps) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Restrict admin routes to ADMIN role only
+  if (type === "auth" && location.pathname.startsWith("/admin")) {
+    const role = String(user?.role || "").toUpperCase();
+    if (role !== "ADMIN") {
+      return <Navigate to="/" replace />;
+    }
+  }
+
   return <>{children}</>;
 }

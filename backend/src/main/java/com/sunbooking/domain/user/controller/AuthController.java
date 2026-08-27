@@ -5,6 +5,7 @@ import com.sunbooking.domain.user.dto.LoginResult;
 import com.sunbooking.domain.user.dto.RegisterRequest;
 import com.sunbooking.domain.user.dto.UserResponse;
 import com.sunbooking.domain.user.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -34,16 +35,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
         LoginResult loginResult = authService.login(loginRequest);
         String token = loginResult.token();
 
         ResponseCookie cookie = ResponseCookie.from("refresh_token", loginResult.refreshToken())
                 .httpOnly(true)
-                .secure(true) // Secure in production
-                .path("/api/auth/refresh")
+                .secure(request.isSecure())
+                .path("/api/auth")
                 .maxAge(7 * 24 * 60 * 60) // 7 days
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -52,15 +53,15 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<UserResponse> refresh(@CookieValue(name = "refresh_token") String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<UserResponse> refresh(@CookieValue(name = "refresh_token") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
         LoginResult loginResult = authService.refreshToken(refreshToken);
 
         ResponseCookie cookie = ResponseCookie.from("refresh_token", loginResult.refreshToken())
                 .httpOnly(true)
-                .secure(true)
-                .path("/api/auth/refresh")
+                .secure(request.isSecure())
+                .path("/api/auth")
                 .maxAge(7 * 24 * 60 * 60)
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -69,15 +70,15 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(@CookieValue(name = "refresh_token", required = false) String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<Map<String, String>> logout(@CookieValue(name = "refresh_token", required = false) String refreshToken, HttpServletRequest request, HttpServletResponse response) {
         authService.logout(refreshToken);
         
         ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
-                .secure(true)
-                .path("/api/auth/refresh")
+                .secure(request.isSecure())
+                .path("/api/auth")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
